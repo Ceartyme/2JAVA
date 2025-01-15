@@ -1,14 +1,22 @@
 package repository;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class Repository {
-    private final static String BDD_name = "tripAgency";
-    private final static String url = "jdbc:mysql://localhost:3306/" + BDD_name;
-    private final static String user = "root";
-    private final static String password = "root";
+
+    private final static Dotenv dotenv = Dotenv.configure().directory("src/config").load();
+    private final static String HOST = dotenv.get("DB_HOST");
+    private final static String PORT = dotenv.get("DB_PORT");
+
+    private final static String BDD_name = "IStore";
+    private final static String url = "jdbc:mysql://"+HOST+":"+PORT+"/" + BDD_name;
+    private final static String USER = dotenv.get("DB_USER");
+    private final static String password = dotenv.get("DB_PASSWORD");
 
     private Repository() {
     }
@@ -17,7 +25,7 @@ public class Repository {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(url, user, password);
+            conn = DriverManager.getConnection(url, USER, password);
         } catch (ClassNotFoundException ex){
             System.out.println("Can't load Driver");
             System.exit(1);
