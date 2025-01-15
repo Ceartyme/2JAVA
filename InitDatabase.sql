@@ -1,0 +1,43 @@
+CREATE DATABASE IF NOT EXISTS IStore;
+
+USE IStore;
+
+CREATE TABLE WhitelistedEmail(
+    Email VARCHAR(50) PRIMARY KEY
+);
+
+CREATE TABLE Roles(
+    IdRole INT AUTO_INCREMENT,
+    Name VARCHAR(25) UNIQUE,
+    PRIMARY KEY (IdRole)
+);
+
+CREATE TABLE Users(
+    IdUser INT AUTO_INCREMENT,
+    Email VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(255) UNIQUE NOT NULL,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    IdRole INT NOT NULL,
+    PRIMARY KEY (IdUser),
+    FOREIGN KEY (IdRole) REFERENCES Roles(IdRole)
+);
+
+CREATE TABLE Employees(
+    IdEmployee INT AUTO_INCREMENT,
+    IdUser INT,
+    PRIMARY KEY (IdEmployee),
+    FOREIGN KEY (IdUser) REFERENCES Users(IdUser)
+);
+
+CREATE TABLE Stores(
+    IdStore INT AUTO_INCREMENT,
+    Name VARCHAR(50),
+    PRIMARY KEY (IdStore)
+);
+
+CREATE TABLE Items(
+    IdItem INT AUTO_INCREMENT,
+    Name VARCHAR(50) UNIQUE NOT NULL,
+    Price DOUBLE NOT NULL
+
+)
