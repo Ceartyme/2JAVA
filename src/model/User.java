@@ -5,16 +5,26 @@ public class User {
     private String email;
     private String password;
     private String username;
-    private String Role;
+    private Role role;
 
     public User(){}
 
-    public User(int idUser, String email, String password, String username, String role){
+    public User(int idUser, String email, String password, String username, int roleId){
         this.idUser = idUser;
         this.email = email;
         this.password = password;
         this.username = username;
-        this.Role = role;
+        switch (roleId){
+            case 1:
+                this.role=Role.ADMIN;
+                break;
+            case 2:
+                this.role=Role.EMPLOYEE;
+                break;
+            case 3:
+                this.role=Role.USER;
+                break;
+        }
     }
 
     public int getIdUser() {
@@ -49,12 +59,12 @@ public class User {
         this.username = username;
     }
 
-    public String getRole() {
-        return Role;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRole(String role) {
-        Role = role;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -64,7 +74,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", username='" + username + '\'' +
-                ", Role='" + Role + '\'' +
+                ", Role='" + role + '\'' +
                 '}';
     }
 }

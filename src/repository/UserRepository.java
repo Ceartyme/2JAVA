@@ -21,7 +21,7 @@ public class UserRepository {
                 return users;
             }
             while(rs.next()){
-                User t = new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),"test");
+                User t = new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),rs.getInt("IdRole"));
                 users.add(t);
             }
             return users;
@@ -32,4 +32,6 @@ public class UserRepository {
         }
         return null;
     }
+
+
 }

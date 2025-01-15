@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Stores;
 DROP TABLE IF EXISTS Employees;
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS WhitelistedEmail;
 
 
@@ -16,20 +15,14 @@ CREATE TABLE WhitelistedEmail(
     Email VARCHAR(50) PRIMARY KEY
 );
 
-CREATE TABLE Roles(
-    IdRole INT AUTO_INCREMENT,
-    Name VARCHAR(25) UNIQUE,
-    PRIMARY KEY (IdRole)
-);
-
 CREATE TABLE Users(
     IdUser INT AUTO_INCREMENT,
     Email VARCHAR(50) UNIQUE NOT NULL,
     Password VARCHAR(255) UNIQUE NOT NULL,
     Username VARCHAR(50) UNIQUE NOT NULL,
-    IdRole INT NOT NULL,
+    IdRole INT DEFAULT 3,
     PRIMARY KEY (IdUser),
-    FOREIGN KEY (IdRole) REFERENCES Roles(IdRole)
+    CONSTRAINT check_role CHECK ( 1<=IdRole AND IdRole<=3 )
 );
 
 CREATE TABLE Employees(
@@ -77,6 +70,3 @@ VALUES  ('Laptop', 999.99),
         ('Headphones', 149.99),
         ('Keyboard', 49.99),
         ('Mouse', 29.99);
-
-INSERT INTO Roles (Name)
-VALUES  ('Admin'),
