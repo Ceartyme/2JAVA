@@ -2,4 +2,4 @@
 
 /out/
 
-config/.env
+src/config/.env

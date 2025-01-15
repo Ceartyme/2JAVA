@@ -71,8 +71,12 @@ CREATE TABLE WORKING(
     FOREIGN KEY (IdUser) REFERENCES Users(IdUser)
 );
 
-INSERT INTO Items (Name, Price) VALUES ('Laptop', 999.99);
-INSERT INTO Items (Name, Price) VALUES ('Smartphone', 699.99);
-INSERT INTO Items (Name, Price) VALUES ('Headphones', 149.99);
-INSERT INTO Items (Name, Price) VALUES ('Keyboard', 49.99);
-INSERT INTO Items (Name, Price) VALUES ('Mouse', 29.99);
+INSERT INTO Items (Name, Price)
+VALUES  ('Laptop', 999.99),
+        ('Smartphone', 699.99),
+        ('Headphones', 149.99),
+        ('Keyboard', 49.99),
+        ('Mouse', 29.99);
+
+INSERT INTO Roles (Name)
+VALUES  ('Admin'),
