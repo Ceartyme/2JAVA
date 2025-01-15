@@ -26,6 +26,7 @@ public class Repository {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, USER, password);
+            System.out.println("Connection successful");
         } catch (ClassNotFoundException ex){
             System.out.println("Can't load Driver");
             System.exit(1);
