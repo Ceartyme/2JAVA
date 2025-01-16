@@ -22,7 +22,7 @@ public class EmailRepository {
         }
     }
 
-    public static Response<ArrayList<String>> getAllEmail(){
+    public static Response<ArrayList<String>> getAllEmails(){
         Connection conn = null;
         ArrayList<String> emails = new ArrayList<>();
         try{
