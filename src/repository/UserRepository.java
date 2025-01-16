@@ -74,4 +74,54 @@ public class UserRepository {
             Repository.closeConnection(conn);
         }
     }
+
+
+    public static Response<User> updateUser(User updatedUser) {
+        Connection conn = null;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(updatedUser.getPassword());
+
+        try{
+            conn = Repository.getConnection();
+
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?");
+            pstmt.setString(1, updatedUser.getEmail());
+            pstmt.setString(2, hashedPassword);
+            pstmt.setString(3, updatedUser.getUsername());
+            pstmt.setInt(4, updatedUser.getIdUser());
+            int ResultRows = pstmt.executeUpdate();
+
+            if (ResultRows > 0){
+                return new Response<>(updatedUser);
+            }else{
+                return new Response<>("User not found or no changes made");
+            }
+
+
+
+        }catch(SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally{
+            Repository.closeConnection(conn);
+        }
+    }
+
+    public static String deleteUser(int idUser) {
+        Connection conn = null;
+
+        try{
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Users WHERE idUser = ?");
+            pstmt.setInt(1, idUser);
+            pstmt.executeUpdate();
+
+            return "User Deleted Successfully";
+        }catch(SQLException e){
+            return "SQL ERROR : "+e.getMessage();
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }
+
+
