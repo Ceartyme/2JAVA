@@ -60,4 +60,23 @@ public class EmailRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String removeEmail(String email){
+        Connection conn = null;
+        try{
+            conn = Repository.getConnection();
+            conn.createStatement().execute("USE IStore;");
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM WhitelistedEmail WHERE Email=?;");
+            pstmt.setString(1,email);
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows== 0){
+                return "That mail address was not whitelisted";
+            }
+            return "Mail address removed Successfully";
+        }catch (SQLException e){
+            return e.getMessage();
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }
