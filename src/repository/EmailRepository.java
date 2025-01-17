@@ -10,8 +10,7 @@ public class EmailRepository {
         Connection conn = null;
         try {
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM WhitelistedEmail WHERE Email=?");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM IStore.WhitelistedEmail WHERE Email=?");
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             rs.next();
@@ -29,8 +28,7 @@ public class EmailRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM WhitelistedEmail;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.WhitelistedEmail;");
             if(!rs.next()){
                 return new Response<>("There are no whitelisted email");
             }
@@ -49,8 +47,7 @@ public class EmailRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO WhitelistedEmail(Email) VALUE(?)");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.WhitelistedEmail(Email) VALUE(?)");
             pstmt.setString(1,email);
             pstmt.executeUpdate();
             return "Email whitelisted Successfully";
@@ -65,8 +62,7 @@ public class EmailRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM WhitelistedEmail WHERE Email=?;");
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM IStore.WhitelistedEmail WHERE Email=?;");
             pstmt.setString(1,email);
             int affectedRows = pstmt.executeUpdate();
             if(affectedRows== 0){

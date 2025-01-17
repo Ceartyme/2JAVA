@@ -13,8 +13,7 @@ public class StoreRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Stores");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Stores");
             if(!rs.next()){
                 return new Response<>("There are no Stores in the database");
             }
@@ -33,8 +32,7 @@ public class StoreRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");;
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Stores(Name) VALUE (?)");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.Stores(Name) VALUE (?)");
             pstmt.setString(1,name);
             pstmt.executeUpdate();
             return "Store created Successfully";
@@ -50,7 +48,7 @@ public class StoreRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            int affectedRows = stmt.executeUpdate("DELETE FROM Stores WHERE IdStore="+id+";");
+            int affectedRows = stmt.executeUpdate("DELETE FROM IStore.Stores WHERE IdStore="+id+";");
             if(affectedRows==0){
                 return "No store with that Id in the database";
             }
@@ -66,7 +64,7 @@ public class StoreRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE Stores SET Name=? WHERE IdStore=?;");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Stores SET Name=? WHERE IdStore=?;");
             pstmt.setString(1,store.getName());
             pstmt.setInt(2,store.getIdStore());
             int affectedRows = pstmt.executeUpdate();

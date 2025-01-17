@@ -16,8 +16,7 @@ public class UserRepository {
         try {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Users;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users;");
             if(!rs.next()){
                 return new Response<>("Error not any user in database");
             }
@@ -39,8 +38,7 @@ public class UserRepository {
         String hashedPassword = encoder.encode(password);
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Users(Email, Password, Username, IdRole) VALUE(?,?,?,?)");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.Users(Email, Password, Username, IdRole) VALUE(?,?,?,?)");
             pstmt.setString(1,email);
             pstmt.setString(2,hashedPassword);
             pstmt.setString(3,username);
@@ -59,8 +57,7 @@ public class UserRepository {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         try {
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Users WHERE Email=?");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM IStore.Users WHERE Email=?");
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (!rs.next()) {
@@ -78,15 +75,13 @@ public class UserRepository {
         }
     }
 
-
     public static Response<User> updateUser(User updatedUser) {
         Connection conn = null;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode(updatedUser.getPassword());
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?;");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?;");
             pstmt.setString(1, updatedUser.getEmail());
             pstmt.setString(2, hashedPassword);
             pstmt.setString(3, updatedUser.getUsername());
@@ -108,8 +103,7 @@ public class UserRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Users WHERE IdUser = ?;");
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM IStore.Users WHERE IdUser = ?;");
             pstmt.setInt(1, idUser);
             int affectedRows = pstmt.executeUpdate();
             if(affectedRows==0){
@@ -128,8 +122,7 @@ public class UserRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE IdUser="+id+";");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdUser="+id+";");
             if(!rs.next()){
                 return new Response<>("No User found with that Id");
             }else {

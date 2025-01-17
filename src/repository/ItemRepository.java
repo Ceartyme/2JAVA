@@ -15,7 +15,7 @@ public class ItemRepository {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
             stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Items;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Items;");
             if(!rs.next()){
                 return new Response<>("There are no Items in the database");
             }
@@ -34,8 +34,7 @@ public class ItemRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Items(Name, Price) VALUE (?,?);");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.Items(Name, Price) VALUE (?,?);");
             pstmt.setString(1,name);
             pstmt.setDouble(2,price);
             pstmt.executeUpdate();
@@ -51,8 +50,7 @@ public class ItemRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().execute("USE IStore;");
-            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Items WHERE IdItem=?;");
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM IStore.Items WHERE IdItem=?;");
             pstmt.setInt(1,id);
             int affectedRows = pstmt.executeUpdate();
             if(affectedRows==0){
@@ -71,8 +69,7 @@ public class ItemRepository {
         try {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Items WHERE IdItem="+id+";");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Items WHERE IdItem="+id+";");
             if(!rs.next()){
                 return new Response<>("No item with that id in the database");
             }
@@ -90,8 +87,7 @@ public class ItemRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("USE IStore;");
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Inventories WHERE IdItem="+id+";");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Inventories WHERE IdItem="+id+";");
             if(!rs.next()){
                 return new Response<>("there are no item with that id in any store");
             }
@@ -110,7 +106,7 @@ public class ItemRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE Items SET Name=?,Price=? WHERE IdItem=?;");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Items SET Name=?,Price=? WHERE IdItem=?;");
             pstmt.setString(1,item.getName());
             pstmt.setDouble(2,item.getPrice());
             pstmt.setInt(3,item.getIdItem());
