@@ -105,4 +105,24 @@ public class ItemRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String updateItem(Item item){
+        Connection conn = null;
+        try{
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE Items SET Name=?,Price=? WHERE IdItem=?;");
+            pstmt.setString(1,item.getName());
+            pstmt.setDouble(2,item.getPrice());
+            pstmt.setInt(3,item.getIdItem());
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows== 0){
+                return "No item with that Id in the database";
+            }
+            return "Item Updated Successfully";
+        }catch (SQLException e){
+            return e.getMessage();
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }
