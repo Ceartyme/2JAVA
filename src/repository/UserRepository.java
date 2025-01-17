@@ -16,6 +16,7 @@ public class UserRepository {
         try {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
+            stmt.executeQuery("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Users;");
             if(!rs.next()){
                 return new Response<>("Error not any user in database");
@@ -38,6 +39,7 @@ public class UserRepository {
         String hashedPassword = encoder.encode(password);
         try{
             conn = Repository.getConnection();
+            conn.createStatement().executeQuery("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Users(Email, Password, Username, IdRole) VALUE(?,?,?,?)");
             pstmt.setString(1,email);
             pstmt.setString(2,hashedPassword);
@@ -57,6 +59,7 @@ public class UserRepository {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         try {
             conn = Repository.getConnection();
+            conn.createStatement().executeQuery("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Users WHERE Email=?");
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
@@ -82,6 +85,7 @@ public class UserRepository {
         String hashedPassword = encoder.encode(updatedUser.getPassword());
         try{
             conn = Repository.getConnection();
+            conn.createStatement().executeQuery("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?;");
             pstmt.setString(1, updatedUser.getEmail());
             pstmt.setString(2, hashedPassword);
@@ -104,6 +108,7 @@ public class UserRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
+            conn.createStatement().executeQuery("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Users WHERE IdUser = ?;");
             pstmt.setInt(1, idUser);
             pstmt.executeUpdate();
@@ -120,6 +125,7 @@ public class UserRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
+            stmt.executeQuery("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE IdUser="+id+";");
             if(!rs.next()){
                 return new Response<>("No User found with that Id");

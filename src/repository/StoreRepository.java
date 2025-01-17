@@ -13,6 +13,7 @@ public class StoreRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
+            stmt.executeQuery("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Stores");
             if(!rs.next()){
                 return new Response<>("There are no Stores in the database");
