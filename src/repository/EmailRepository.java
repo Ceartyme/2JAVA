@@ -10,7 +10,7 @@ public class EmailRepository {
         Connection conn = null;
         try {
             conn = Repository.getConnection();
-            conn.createStatement().executeQuery("USE IStore;");
+            conn.createStatement().execute("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM WhitelistedEmail WHERE Email=?");
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
@@ -29,7 +29,7 @@ public class EmailRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("USE IStore;");
+            stmt.execute("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM WhitelistedEmail;");
             if(!rs.next()){
                 return new Response<>("There are no whitelisted email");
@@ -49,7 +49,7 @@ public class EmailRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().executeQuery("USE IStore;");
+            conn.createStatement().execute("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO WhitelistedEmail(Email) VALUE(?)");
             pstmt.setString(1,email);
             pstmt.executeUpdate();

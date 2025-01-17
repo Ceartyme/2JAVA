@@ -14,7 +14,7 @@ public class ItemRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("USE IStore;");
+            stmt.execute("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Items;");
             if(!rs.next()){
                 return new Response<>("There are no Items in the database");
@@ -34,7 +34,7 @@ public class ItemRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().executeQuery("USE IStore;");
+            conn.createStatement().execute("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Items(Name, Price) VALUE (?,?);");
             pstmt.setString(1,name);
             pstmt.setDouble(2,price);
@@ -51,10 +51,13 @@ public class ItemRepository {
         Connection conn = null;
         try{
             conn = Repository.getConnection();
-            conn.createStatement().executeQuery("USE IStore;");
+            conn.createStatement().execute("USE IStore;");
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Items WHERE IdItem=?;");
             pstmt.setInt(1,id);
-            pstmt.executeUpdate();
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows==0){
+                return "No item with that Id in the database";
+            }
             return "Item deleted Successfully";
         }catch (SQLException e){
             return "SQL ERROR : "+e.getMessage();
@@ -68,7 +71,7 @@ public class ItemRepository {
         try {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("USE IStore;");
+            stmt.execute("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Items WHERE IdItem="+id+";");
             if(!rs.next()){
                 return new Response<>("No item with that id in the database");
@@ -87,7 +90,7 @@ public class ItemRepository {
         try{
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("USE IStore;");
+            stmt.execute("USE IStore;");
             ResultSet rs = stmt.executeQuery("SELECT * FROM Inventories WHERE IdItem="+id+";");
             if(!rs.next()){
                 return new Response<>("there are no item with that id in any store");
