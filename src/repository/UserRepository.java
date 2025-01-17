@@ -32,6 +32,24 @@ public class UserRepository {
         }
     }
 
+    public static Response<User> getUserById(int id){
+        Connection conn = null;
+        try{
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdUser="+id+";");
+            if(!rs.next()){
+                return new Response<>("No User found with that Id");
+            }else {
+                return new Response<>(new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),rs.getInt("IdRole")));
+            }
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
     public static Response<ArrayList<User>> getAllEmployees(){
         Connection conn = null;
 
@@ -140,23 +158,6 @@ public class UserRepository {
         }
     }
 
-    public static Response<User> getUserById(int id){
-        Connection conn = null;
-        try{
-            conn = Repository.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdUser="+id+";");
-            if(!rs.next()){
-                return new Response<>("No User found with that Id");
-            }else {
-                return new Response<>(new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),rs.getInt("IdRole")));
-            }
-        }catch (SQLException e){
-            return new Response<>("SQL ERROR : "+e.getMessage());
-        }finally {
-            Repository.closeConnection(conn);
-        }
-    }
 }
 
 
