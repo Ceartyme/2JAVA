@@ -61,4 +61,23 @@ public class StoreRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String updateStore(Store store){
+        Connection conn = null;
+        try{
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE Stores SET Name=? WHERE IdStore=?;");
+            pstmt.setString(1,store.getName());
+            pstmt.setInt(2,store.getIdStore());
+            int affectedRows = pstmt.executeUpdate();
+            if(affectedRows== 0){
+                return "No store with that Id in the database";
+            }
+            return "Store Updated Successfully";
+        }catch (SQLException e){
+            return e.getMessage();
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }
