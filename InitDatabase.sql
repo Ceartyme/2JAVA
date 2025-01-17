@@ -25,13 +25,6 @@ CREATE TABLE Users(
     CONSTRAINT check_role CHECK ( 1<=IdRole AND IdRole<=3 )
 );
 
-CREATE TABLE Employees(
-    IdEmployee INT AUTO_INCREMENT,
-    IdUser INT,
-    PRIMARY KEY (IdEmployee),
-    FOREIGN KEY (IdUser) REFERENCES Users(IdUser) ON DELETE CASCADE
-);
-
 CREATE TABLE Stores(
     IdStore INT AUTO_INCREMENT,
     Name VARCHAR(50),
