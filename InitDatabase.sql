@@ -29,7 +29,7 @@ CREATE TABLE Employees(
     IdEmployee INT AUTO_INCREMENT,
     IdUser INT,
     PRIMARY KEY (IdEmployee),
-    FOREIGN KEY (IdUser) REFERENCES Users(IdUser)
+    FOREIGN KEY (IdUser) REFERENCES Users(IdUser) ON DELETE CASCADE
 );
 
 CREATE TABLE Stores(
@@ -51,8 +51,8 @@ CREATE TABLE Inventories(
     IdItem int,
     Amount int default 1,
     PRIMARY KEY (IdStore,IdItem),
-    FOREIGN KEY (IdStore) REFERENCES Stores(IdStore),
-    FOREIGN KEY (IdItem) REFERENCES Items(IdItem),
+    FOREIGN KEY (IdStore) REFERENCES Stores(IdStore) ON DELETE CASCADE ,
+    FOREIGN KEY (IdItem) REFERENCES Items(IdItem) ON DELETE CASCADE ,
     CONSTRAINT check_amount CHECK ( Amount>=0 )
 );
 
@@ -60,8 +60,8 @@ CREATE TABLE WORKING(
     IdStore int,
     IdUser int,
     PRIMARY KEY (IdStore,IdUser),
-    FOREIGN KEY (IdStore) REFERENCES Stores(IdStore),
-    FOREIGN KEY (IdUser) REFERENCES Users(IdUser)
+    FOREIGN KEY (IdStore) REFERENCES Stores(IdStore) ON DELETE CASCADE ,
+    FOREIGN KEY (IdUser) REFERENCES Users(IdUser) ON DELETE CASCADE
 );
 
 INSERT INTO Items (Name, Price)
