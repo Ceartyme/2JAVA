@@ -14,9 +14,8 @@ public class InputService{
             }
             return response;
         }catch (InputMismatchException e){
+            input.nextLine();
             return intInput(minimum, maximum);
-        }finally {
-            input.close();
         }
     }
 }
