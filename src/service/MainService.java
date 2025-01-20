@@ -1,6 +1,8 @@
 package service;
 
 import model.User;
+import service.swing.SwingService;
+import service.terminal.TerminalService;
 import ui.TerminalInterface;
 
 import java.util.Scanner;

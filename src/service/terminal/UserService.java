@@ -1,43 +1,13 @@
-package service;
+package service.terminal;
 
 import model.Response;
-import model.Role;
 import model.User;
 import repository.EmailRepository;
 import repository.UserRepository;
-import ui.TerminalInterface;
 
-import javax.xml.transform.Templates;
 import java.util.Scanner;
 
-public class TerminalService {
-
-
-
-    public static void start() {
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-
-        while (running) {
-            TerminalInterface.showMainMenu();
-            int choice = InputService.intInput(1, 3, scanner);
-
-
-            switch (choice) {
-                case 1:
-                    loginController(scanner);
-                    break;
-                case 2:
-                    registerController(scanner);
-                    break;
-                case 3:
-                    System.out.println("Goodbye !");
-                    running = false;
-                    break;
-            }
-        }
-    }
-
+public class UserService {
     public static void loginController(Scanner scanner) {
         scanner.nextLine();
         System.out.print("Enter email: ");
@@ -119,23 +89,6 @@ public class TerminalService {
             System.out.println("Error Message :" + response.getMessage());
         }
 
-    }
-
-    public static void adminActions(Scanner scanner) {
-        TerminalInterface.showAdminMenu();
-        int choice = InputService.intInput(1, 3, scanner);
-
-        switch (choice) {
-            case 1:
-
-        }
-
-    }
-
-
-    public static void userActions(Scanner scanner) {
-        TerminalInterface.showUserMenu();
-        int choice = InputService.intInput(1, 3, scanner);
     }
 
 
