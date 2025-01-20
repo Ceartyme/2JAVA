@@ -63,3 +63,6 @@ VALUES  ('Laptop', 999.99),
         ('Headphones', 149.99),
         ('Keyboard', 49.99),
         ('Mouse', 29.99);
+
+INSERT INTO WhitelistedEmail (Email)
+VALUES ("candicedambrin@gmail.com");

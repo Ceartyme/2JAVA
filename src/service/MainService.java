@@ -13,7 +13,7 @@ public class MainService {
 
         TerminalInterface terminal = new TerminalInterface();
         TerminalInterface.AskChoiceInterface();
-        int choice = InputService.intInput(1,2);
+        int choice = InputService.intInput(1,2, scanner);
         switch(choice) {
               case 1:
                   TerminalService.start();
