@@ -1,5 +1,6 @@
 package repository;
 
+import model.Item;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import model.Response;
@@ -73,7 +74,7 @@ public class UserRepository {
         }
     }
 
-    public static String createUser(String username,String email, String password, int idRole){
+    public static Response<User> createUser(String username,String email, String password, int idRole){
         Connection conn =null;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode(password);
@@ -85,9 +86,12 @@ public class UserRepository {
             pstmt.setString(3,username);
             pstmt.setInt(4,idRole);
             pstmt.executeUpdate();
-            return "User Created Successfully";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT MAX(IdUser) FROM IStore.Users");
+            rs.next();
+            return new Response<>(new User(rs.getInt(1),email,password,username,idRole));
         }catch(SQLException e){
-            return "SQL ERROR : "+e.getMessage();
+            return new Response<>("SQL ERROR : "+e.getMessage());
         }finally {
             Repository.closeConnection(conn);
         }

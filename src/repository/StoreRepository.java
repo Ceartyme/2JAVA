@@ -28,16 +28,19 @@ public class StoreRepository {
         }
     }
 
-    public static String createStore(String name){
+    public static Response<Store> createStore(String name){
         Connection conn = null;
         try{
             conn = Repository.getConnection();
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.Stores(Name) VALUE (?)");
             pstmt.setString(1,name);
             pstmt.executeUpdate();
-            return "Store created Successfully";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT MAX(IdStore) FROM IStore.Stores");
+            rs.next();
+            return new Response<>(new Store(rs.getInt(1),name));
         }catch (SQLException e){
-            return "SQL ERROR : "+e.getMessage();
+            return new Response<>("SQL ERROR : "+e.getMessage());
         }finally {
             Repository.closeConnection(conn);
         }
