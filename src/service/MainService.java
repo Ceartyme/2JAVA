@@ -6,7 +6,7 @@ import ui.TerminalInterface;
 import java.util.Scanner;
 
 public class MainService {
-    public static void start(String[] args) {
+    public static void start() {
         Scanner scanner = new Scanner(System.in);
         User loggedUser = null;
         boolean running = true;
