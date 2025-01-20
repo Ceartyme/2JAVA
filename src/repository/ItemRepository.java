@@ -30,7 +30,7 @@ public class ItemRepository {
         }
     }
 
-    public static String createItem(String name, double price){
+    public static Response<Item> createItem(String name, double price){
         Connection conn = null;
         try{
             conn = Repository.getConnection();
@@ -38,9 +38,12 @@ public class ItemRepository {
             pstmt.setString(1,name);
             pstmt.setDouble(2,price);
             pstmt.executeUpdate();
-            return "Item created Successfully";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT MAX(IdItem) FROM IStore.Items");
+            rs.next();
+            return new Response<>(new Item(rs.getInt(1),name,price));
         }catch (SQLException e){
-            return "SQL ERROR : "+e.getMessage();
+            return new Response<>("SQL ERROR : "+e.getMessage());
         }finally {
             Repository.closeConnection(conn);
         }
