@@ -18,7 +18,7 @@ public class InventoryRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Inventories WHERE IdStore="+idStore+";");
             if(!rs.next()){
-                return new Response<>("This store does not exist or does not have any employee");
+                return new Response<>("This store does not exist or does not have any item");
             }
             do {
                 inventories.add(new Inventory(idStore,rs.getInt("Amount"),rs.getInt("IdItem")));

@@ -95,7 +95,7 @@ public class ItemRepository {
                 return new Response<>("there are no item with that id in any store");
             }
             do{
-                inventories.add(new Inventory(rs.getInt("IdStore"),rs.getInt("IdItem"),rs.getInt("Amount")));
+                inventories.add(new Inventory(rs.getInt("IdStore"),rs.getInt("Amount"),rs.getInt("IdItem")));
             }while (rs.next());
             return new Response<>(inventories);
         }catch (SQLException e){
