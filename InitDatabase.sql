@@ -75,6 +75,7 @@ VALUES ("Monoprix"),
 INSERT INTO Users (Email, Password, Username, IdRole)
 VALUE ("clementbertin@gmail.com","$2a$10$wUItoNaEW9JbZV9JvIJFQ.qaTxUSQ/iikGnTFbqji5kGYe2eOym/i","Ceartyme",1);
 
+
 INSERT INTO Inventories(IdStore, IdItem, Amount)
 VALUES (1,1,5),
        (1,3,1),
