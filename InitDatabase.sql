@@ -65,4 +65,17 @@ VALUES  ('Laptop', 999.99),
         ('Mouse', 29.99);
 
 INSERT INTO WhitelistedEmail (Email)
-VALUES ("candicedambrin@gmail.com");
+VALUES ("candicedambrin@gmail.com"),
+       ("clementbertin@gmail.com");
+
+INSERT INTO Stores (Name)
+VALUES ("Monoprix"),
+       ("Auchan");
+
+INSERT INTO Users (Email, Password, Username, IdRole)
+VALUE ("clementbertin@gmail.com","$2a$10$wUItoNaEW9JbZV9JvIJFQ.qaTxUSQ/iikGnTFbqji5kGYe2eOym/i","Ceartyme",1);
+
+INSERT INTO Inventories(IdStore, IdItem, Amount)
+VALUES (1,1,5),
+       (1,3,1),
+       (2,3,4);
