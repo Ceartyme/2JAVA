@@ -120,15 +120,15 @@ public class UserRepository {
         }
     }
 
+
     public static Response<User> updateUser(User updatedUser) {
         Connection conn = null;
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(updatedUser.getPassword());
+
         try{
             conn = Repository.getConnection();
             PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?;");
             pstmt.setString(1, updatedUser.getEmail());
-            pstmt.setString(2, hashedPassword);
+            pstmt.setString(2, updatedUser.getPassword());
             pstmt.setString(3, updatedUser.getUsername());
             pstmt.setInt(4, updatedUser.getIdUser());
             int affectedRows = pstmt.executeUpdate();

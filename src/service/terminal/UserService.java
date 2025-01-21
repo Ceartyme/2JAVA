@@ -5,6 +5,7 @@ import model.User;
 import repository.EmailRepository;
 import repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserService {
@@ -27,10 +28,10 @@ public class UserService {
                         TerminalService.adminActions(scanner);
                         break;
                     case EMPLOYEE:
-                        TerminalService.userActions(scanner);
+                        TerminalService.userActions(scanner, userLogged);
                         break;
                     case USER:
-                        TerminalService.userActions(scanner);
+                        TerminalService.userActions(scanner, userLogged);
 
                         break;
 
@@ -89,6 +90,79 @@ public class UserService {
             System.out.println("Error Message :" + response.getMessage());
         }
 
+    }
+
+    public static void updateController(Scanner scanner, User loggedUser) {
+        scanner.nextLine();
+        System.out.println("You will edit your profil !");
+        System.out.println("Current Username: " + loggedUser.getUsername());
+        System.out.println("Current Email: " + loggedUser.getEmail());
+
+        System.out.println("Enter new Email (or press enter to keep current) :");
+        String newEmail = scanner.nextLine().trim();
+        if (newEmail.isEmpty()){
+            newEmail = loggedUser.getEmail();
+        }else{
+            loggedUser.setEmail(newEmail);
+        }
+
+        System.out.println("Enter new Username (or press enter to keep current) :");
+        String newUsername = scanner.nextLine().trim();
+        if (newUsername.isEmpty()){
+            newUsername = loggedUser.getUsername();
+        }else{
+            loggedUser.setUsername(newUsername);
+        }
+
+        System.out.println("Enter new Password (or press enter to keep current) :");
+        String newPassword = scanner.nextLine().trim();
+        if (newPassword.isEmpty()){
+            newPassword = loggedUser.getPassword();
+        }else{
+            loggedUser.setPassword(newPassword);
+        }
+
+
+        Response<User> updateResponse = UserRepository.updateUser(loggedUser);
+
+        if (updateResponse.getMessage().equals("Success")){
+            System.out.println("Profil updated successfully.");
+        }else{
+            System.out.println("Error Message :" + updateResponse.getMessage());
+        }
+    }
+
+    public static void readInfoUsers(Scanner scanner) {
+        Response<ArrayList<User>> response = UserRepository.getAllUsers();
+
+        if (!response.getMessage().equals("Success")){
+            System.out.println("Error : " + response.getMessage());
+        }
+
+        ArrayList<User> users = response.getValue();
+
+        System.out.println("Users information:");
+        System.out.println("ID | Username | Email | Role");
+        System.out.println("-----------------------------");
+
+        for (User user : users) {
+            System.out.printf("%d | %s | %s | %s%n",
+                    user.getIdUser(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getRole()
+            );
+        }
+    }
+
+    public static void deleteController(Scanner scanner, User loggedUser) {
+        String response = UserRepository.deleteUser(loggedUser.getIdUser());
+
+        if (response.equals("User Deleted Successfully")){
+            System.out.println("The user has been successfully deleted.");
+        }else{
+            System.out.println("Error Message :" + response);
+        }
     }
 
 

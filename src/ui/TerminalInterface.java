@@ -38,8 +38,11 @@ public class TerminalInterface {
         System.out.println("║               User Options                ║");
         System.out.println("║                                           ║");
         System.out.println("║          1. Browse Inventory              ║");
-        System.out.println("║          2. Update Profile                ║");
-        System.out.println("║          3. Logout                        ║");
+        System.out.println("║          2. Read informations about       ║");
+        System.out.println("║             users                         ║");
+        System.out.println("║          3. Update Profile                ║");
+        System.out.println("║          4. Delete Profile                ║");
+        System.out.println("║          5. Logout                        ║");
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");
     }
