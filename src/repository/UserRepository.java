@@ -51,6 +51,47 @@ public class UserRepository {
         }
     }
 
+    public static Response<User> getUserByUsername(String username) {
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM IStore.Users WHERE Username = ?");
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Response<>(new User(rs.getInt("IdUser"), rs.getString("Email"), rs.getString("Password"), rs.getString("Username"), rs.getInt("IdRole")));
+            }
+            return new Response<>("No user found with that username");
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+    public static Response<User> getUserByEmail(String email) {
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM IStore.Users WHERE Email = ?");
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Response<>(new User(rs.getInt("IdUser"), rs.getString("Email"), rs.getString("Password"), rs.getString("Username"), rs.getInt("IdRole")));
+            }
+            return new Response<>("No user found with that email");
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+
+
+
+
+
     public static Response<ArrayList<User>> getAllEmployees(){
         Connection conn = null;
 

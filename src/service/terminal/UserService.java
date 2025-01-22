@@ -4,6 +4,7 @@ import model.Response;
 import model.User;
 import repository.EmailRepository;
 import repository.UserRepository;
+import service.InputService;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -11,11 +12,15 @@ import java.util.Scanner;
 public class UserService {
     public static void loginController(Scanner scanner) {
         scanner.nextLine();
-        System.out.print("Enter email: ");
-        String email = scanner.nextLine();
-        System.out.print("Enter password: ");
+
+        String email = InputService.emailInput(scanner);
+        scanner.nextLine();
+
+        System.out.println("Enter password: ");
         String password = scanner.nextLine();
 
+        System.out.println(email);
+        System.out.println(password);
         Response<User> response = UserRepository.login(email, password);
 
         if (response.getMessage().equals("Success")){
@@ -38,12 +43,6 @@ public class UserService {
                 }
 
 
-
-
-
-
-
-
             }else{
                 System.out.println("Login failed.");
             }
@@ -57,22 +56,45 @@ public class UserService {
 
     public static void registerController(Scanner scanner) {
         scanner.nextLine();
-        System.out.print("Enter Username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter email: ");
-        String email = scanner.nextLine();
+        String username;
+        String email;
 
+        while(true){
+            System.out.print("Enter Username: ");
+            username = scanner.nextLine();
 
-        Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(email);
-
-        if(!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()){
-            if (!whitelistResponse.getMessage().equals("Success")){
-                System.out.println("Error Message :" + whitelistResponse.getMessage());
+            Response<User> response = UserRepository.getUserByUsername(username);
+            if (response.getMessage().equals("Success") && response.getValue() != null) {
+                System.out.println("This username is already taken. Please choose another.");
             }else{
-                System.out.println("Registration failed. Email is not whitelisted.");
+                break;
             }
-            return;
         }
+
+        while(true){
+
+            email = InputService.emailInput(scanner);
+            Response<User> response = UserRepository.getUserByEmail(email);
+
+            if (response.getMessage().equals("Success") && response.getValue() != null) {
+                System.out.println("This email is already taken. Please choose another.");
+            }else{
+                Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(email);
+
+                if(!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()){
+                    if (!whitelistResponse.getMessage().equals("Success")){
+                        System.out.println("Error Message :" + whitelistResponse.getMessage());
+                    }else{
+                        System.out.println("Registration failed. Email is not whitelisted.");
+                        return;
+                    }
+
+                }else{
+                    break;
+                }
+            }
+        }
+
 
         System.out.print("Enter password: ");
         String password = scanner.nextLine();

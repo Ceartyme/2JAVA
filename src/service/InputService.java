@@ -21,10 +21,12 @@ public class InputService{
     }
 
     public static String emailInput(Scanner input){
-        System.out.println("Enter a valid email address : ");
+        System.out.println("Enter email address : ");
         String email=input.next();
         if (!isEmailValid(email)){
-            emailInput(input);
+            input.nextLine();
+            System.out.println("Invalid email address");
+            return emailInput(input);
         }
         return email;
     }

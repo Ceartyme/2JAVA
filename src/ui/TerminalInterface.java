@@ -13,7 +13,7 @@ public class TerminalInterface {
 
     public static void showMainMenu(){
         System.out.println("╔═══════════════════════════════════════════╗");
-        System.out.println("║          Welcome to iStore Ltd!           ║");
+        System.out.println("║            Welcome to iStore              ║");
         System.out.println("║                                           ║");
         System.out.println("║          1. Login                         ║");
         System.out.println("║          2. Register                      ║");
