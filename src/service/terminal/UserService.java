@@ -19,8 +19,8 @@ public class UserService {
         System.out.println("Enter password: ");
         String password = scanner.nextLine();
 
-        System.out.println(email);
-        System.out.println(password);
+
+
         Response<User> response = UserRepository.login(email, password);
 
         if (response.getMessage().equals("Success")){
@@ -31,6 +31,8 @@ public class UserService {
                 switch (userLogged.getRole()) {
                     case ADMIN:
                         TerminalService.adminActions(scanner);
+
+
                         break;
                     case EMPLOYEE:
                         TerminalService.userActions(scanner, userLogged);
