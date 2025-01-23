@@ -117,11 +117,13 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerStores();
-            int choice = InputService.intInput(1, 6, scanner);
+            int choice = InputService.intInput(1, 7, scanner);
             switch (choice) {
                 case 1:
+                    StoreService.createStoreController(scanner);
                     break;
                 case 2:
+                    StoreService.addEmployeesController(scanner);
                     break;
                 case 3:
                     break;
@@ -132,6 +134,7 @@ public class TerminalService {
                 case 6:
                     break;
                 case 7:
+                    running = false;
                     break;
             }
         }

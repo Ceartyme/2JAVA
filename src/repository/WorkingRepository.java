@@ -3,10 +3,7 @@ package repository;
 import model.Response;
 import model.User;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -24,6 +21,30 @@ public class WorkingRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String updateUserRoleEmployee(int idUser, int newIdRole){
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Users SET IdRole = ? WHERE IdUser = ?;");
+            pstmt.setInt(1, newIdRole);
+            pstmt.setInt(2, idUser);
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                return "User role updated successfully";
+            } else {
+                return "User not found or no changes made";
+            }
+        } catch (SQLException e) {
+            return "SQL ERROR: " + e.getMessage();
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+
+
 
     public static String fire(int idStore, int idUser){
         Connection conn = null;
