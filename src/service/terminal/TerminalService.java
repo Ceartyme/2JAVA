@@ -104,8 +104,10 @@ public class TerminalService {
                     UserService.updateControllerAdmin(scanner);
                     break;
                 case 2:
+                    UserService.deleteControllerAdmin(scanner);
                     break;
                 case 3:
+                    running = false;
                     break;
             }
         }

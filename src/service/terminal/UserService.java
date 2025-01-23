@@ -99,7 +99,7 @@ public class UserService {
             }
         }
 
-
+        scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
@@ -336,6 +336,15 @@ public class UserService {
     }
 
     public static void deleteController(Scanner scanner, User loggedUser) {
+
+        System.out.println("Are you sure you want to delete the user? (yes/no)");
+        String answer = scanner.nextLine();
+
+        if (answer.equals("no")){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
         String response = UserRepository.deleteUser(loggedUser.getIdUser());
 
         if (response.equals("User Deleted Successfully")){
@@ -343,6 +352,44 @@ public class UserService {
         }else{
             System.out.println("Error Message :" + response);
         }
+    }
+
+    public static void deleteControllerAdmin(Scanner scanner) {
+        System.out.println("Fetching all users...");
+        readInfoUsers(scanner);
+
+        int idUser = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        Response<User> response = UserRepository.getUserById(idUser);
+
+        if(!response.getMessage().equals("Success")){
+            System.out.println("Error Message :" + response.getMessage());
+            return;
+        }
+
+        User userToDelete = response.getValue();
+
+        if(userToDelete == null){
+            System.out.println("User does not exist. Please choose another.");
+        }
+
+        scanner.nextLine();
+        System.out.println("Are you sure you want to delete the user? (yes/no)");
+        String answer = scanner.nextLine();
+
+        if (answer.equals("no")){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        String responseDelete = UserRepository.deleteUser(idUser);
+
+        if (responseDelete.equals("User Deleted Successfully")) {
+            System.out.println("The user has been successfully deleted.");
+        } else {
+            System.out.println("Error Message: " + responseDelete);
+        }
+
     }
 
 
