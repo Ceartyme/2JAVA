@@ -1,5 +1,7 @@
 package model;
 
 public enum Role {
-    ADMIN,EMPLOYEE,USER
+    ADMIN,EMPLOYEE,USER;
+
+
 }

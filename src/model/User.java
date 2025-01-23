@@ -67,8 +67,32 @@ public class User {
         return role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public int getRoleId() {
+        switch (role) {
+            case ADMIN:
+                return 1;
+            case EMPLOYEE:
+                return 2;
+            case USER:
+                return 3;
+            default:
+                throw new IllegalStateException("Unexpected value: " + role);
+        }
+    }
+
+
+    public void setRole(int role) {
+        switch (role){
+            case 1:
+                this.role=Role.ADMIN;
+                break;
+            case 2:
+                this.role=Role.EMPLOYEE;
+                break;
+            case 3:
+                this.role=Role.USER;
+                break;
+        }
     }
 
     @Override

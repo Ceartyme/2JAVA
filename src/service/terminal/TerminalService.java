@@ -1,16 +1,10 @@
 package service.terminal;
 
-import model.Response;
 import model.User;
-import repository.EmailRepository;
-import repository.UserRepository;
 import service.InputService;
-import service.terminal.StoreService;
 import ui.TerminalInterface;
 
 import java.util.Scanner;
-
-import service.terminal.UserService;
 
 public class TerminalService {
 
@@ -44,13 +38,30 @@ public class TerminalService {
 
 
     public static void adminActions(Scanner scanner) {
-        TerminalInterface.showAdminMenu();
-        int choice = InputService.intInput(1, 3, scanner);
 
-        switch (choice) {
-            case 1:
+        boolean running = true;
 
+        while (running) {
+            TerminalInterface.showAdminMenu();
+            int choice = InputService.intInput(1, 4, scanner);
+
+            switch (choice) {
+                case 1:
+                    ManageUsersActions(scanner);
+                    break;
+                case 2:
+                    ManageStoresActions(scanner);
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    System.out.println("Goodbye !");
+                    running = false;
+                    break;
+            }
         }
+
+
 
     }
 
@@ -69,7 +80,7 @@ public class TerminalService {
                     UserService.readInfoUsers(scanner);
                     break;
                 case 3:
-                    UserService.updateController(scanner, loggedUser);
+                    UserService.updateControllerUser(scanner, loggedUser);
                     break;
                 case 4:
                     UserService.deleteController(scanner, loggedUser);
@@ -80,6 +91,48 @@ public class TerminalService {
             }
         }
 
+    }
+
+
+    public static void ManageUsersActions(Scanner scanner) {
+        boolean running = true;
+        while (running) {
+            TerminalInterface.ManagerUsers();
+            int choice = InputService.intInput(1, 3, scanner);
+            switch (choice) {
+                case 1:
+                    UserService.updateControllerAdmin(scanner);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        }
+    }
+
+    public static void ManageStoresActions(Scanner scanner) {
+        boolean running = true;
+        while (running) {
+            TerminalInterface.ManagerStores();
+            int choice = InputService.intInput(1, 6, scanner);
+            switch (choice) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+            }
+        }
     }
 
 

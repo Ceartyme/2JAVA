@@ -31,8 +31,6 @@ public class UserService {
                 switch (userLogged.getRole()) {
                     case ADMIN:
                         TerminalService.adminActions(scanner);
-
-
                         break;
                     case EMPLOYEE:
                         TerminalService.userActions(scanner, userLogged);
@@ -43,7 +41,6 @@ public class UserService {
                         break;
 
                 }
-
 
             }else{
                 System.out.println("Login failed.");
@@ -121,26 +118,69 @@ public class UserService {
 
     }
 
-    public static void updateController(Scanner scanner, User loggedUser) {
+    public static void updateControllerUser(Scanner scanner, User loggedUser) {
         scanner.nextLine();
         System.out.println("You will edit your profil !");
         System.out.println("Current Username: " + loggedUser.getUsername());
         System.out.println("Current Email: " + loggedUser.getEmail());
 
-        System.out.println("Enter new Email (or press enter to keep current) :");
-        String newEmail = scanner.nextLine().trim();
-        if (newEmail.isEmpty()){
-            newEmail = loggedUser.getEmail();
-        }else{
-            loggedUser.setEmail(newEmail);
+        while (true){
+            System.out.println("Enter new Username (or press enter to keep current) :");
+            String newUsername = scanner.nextLine().trim();
+            if (newUsername.isEmpty()){
+                newUsername = loggedUser.getUsername();
+                break;
+            }else{
+                Response<Boolean> usernameCheckResponse = UserRepository.getUserByUsername(newUsername);
+                if (usernameCheckResponse.getMessage().equals("Success") && usernameCheckResponse.getValue()) {
+                    System.out.println("This username is already taken. Please choose another.");
+                } else if (!usernameCheckResponse.getMessage().equals("Success")) {
+                    System.out.println("Error Message: " + usernameCheckResponse.getMessage());
+                }else {
+                    loggedUser.setUsername(newUsername);
+                    break;
+                }
+
+            }
         }
 
-        System.out.println("Enter new Username (or press enter to keep current) :");
-        String newUsername = scanner.nextLine().trim();
-        if (newUsername.isEmpty()){
-            newUsername = loggedUser.getUsername();
-        }else{
-            loggedUser.setUsername(newUsername);
+        while (true){
+            System.out.println("Enter new Email ( or press enter to keep current) :");
+            String newEmail = scanner.nextLine().trim();
+
+            if (newEmail.isEmpty()){
+                newEmail = loggedUser.getEmail();
+                break;
+            }
+
+            if (!InputService.isEmailValid(newEmail)){
+                System.out.println("Email is not valid. Please try again.");
+            } else{
+
+
+                Response<Boolean> response = UserRepository.getUserByEmail(newEmail);
+
+                if (response.getMessage().equals("Success") && response.getValue()) {
+                    System.out.println("This email is already taken. Please choose another.");
+                }else if(!response.getMessage().equals("Success")){
+                    System.out.println("Error Message :" + response.getMessage());
+                } else {
+                    Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(newEmail);
+
+                    if (!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()) {
+                        if (!whitelistResponse.getMessage().equals("Success")) {
+                            System.out.println("Error Message :" + whitelistResponse.getMessage());
+                        } else {
+                            System.out.println("Registration failed. Email is not whitelisted.");
+                            return;
+                        }
+
+                    } else {
+                        break;
+                    }
+                }
+            }
+
         }
 
         System.out.println("Enter new Password (or press enter to keep current) :");
@@ -160,6 +200,117 @@ public class UserService {
             System.out.println("Error Message :" + updateResponse.getMessage());
         }
     }
+
+    public static void updateControllerAdmin(Scanner scanner) {
+        System.out.println("Fetching all users...");
+        readInfoUsers(scanner);
+
+
+        int idUser = InputService.intInput(1, 2, scanner);
+        scanner.nextLine();
+
+        Response<User> response = UserRepository.getUserById(idUser);
+
+        if (!response.getMessage().equals("Success")){
+            System.out.println("Error Message :" + response.getMessage());
+        }
+
+        User userToUpdate = response.getValue();
+        System.out.println("Current user details:");
+        System.out.printf("ID: %d | Username: %s | Email: %s | Role: %s%n",
+                userToUpdate.getIdUser(),
+                userToUpdate.getUsername(),
+                userToUpdate.getEmail(),
+                userToUpdate.getRole()
+        );
+
+        while (true){
+            System.out.println("Enter new Username (or press enter to keep current) :");
+            String newUsername = scanner.nextLine().trim();
+            if (newUsername.isEmpty()){
+                newUsername = userToUpdate.getUsername();
+                break;
+            }else{
+                Response<Boolean> usernameCheckResponse = UserRepository.getUserByUsername(newUsername);
+                if (usernameCheckResponse.getMessage().equals("Success") && usernameCheckResponse.getValue()) {
+                    System.out.println("This username is already taken. Please choose another.");
+                } else if (!usernameCheckResponse.getMessage().equals("Success")) {
+                    System.out.println("Error Message: " + usernameCheckResponse.getMessage());
+                }else {
+                    userToUpdate.setUsername(newUsername);
+                    break;
+                }
+
+            }
+        }
+
+        while (true){
+            System.out.println("Enter new Email ( or press enter to keep current) :");
+            String newEmail = scanner.nextLine().trim();
+
+            if (newEmail.isEmpty()){
+                newEmail = userToUpdate.getEmail();
+                break;
+            }
+
+            if (!InputService.isEmailValid(newEmail)){
+                System.out.println("Email is not valid. Please try again.");
+            } else {
+
+
+                Response<Boolean> CheckEmailResponse = UserRepository.getUserByEmail(newEmail);
+
+                if (response.getMessage().equals("Success") && CheckEmailResponse.getValue()) {
+                    System.out.println("This email is already taken. Please choose another.");
+                } else if (!CheckEmailResponse.getMessage().equals("Success")) {
+                    System.out.println("Error Message :" + CheckEmailResponse.getMessage());
+                } else {
+                    Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(newEmail);
+
+                    if (!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()) {
+                        if (!whitelistResponse.getMessage().equals("Success")) {
+                            System.out.println("Error Message :" + whitelistResponse.getMessage());
+                        } else {
+                            System.out.println("Registration failed. Email is not whitelisted.");
+                            return;
+                        }
+
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+
+
+        System.out.println("Enter new password (or press Enter to keep current):");
+        String newPassword = scanner.nextLine().trim();
+        if (!newPassword.isEmpty()) {
+            userToUpdate.setPassword(newPassword);
+        }
+
+        System.out.println("Enter new role (1 = ADMIN, 2 = EMPLOYEE, 3 = USER) (or press Enter to keep current):");
+        String newRole = scanner.nextLine().trim();
+        if (!newRole.isEmpty()) {
+            try {
+                int roleId = Integer.parseInt(newRole);
+                userToUpdate.setRole(roleId);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid role ID. No changes made to the role.");
+            }
+        }
+
+        Response<User> updateResponse = UserRepository.updateUser(userToUpdate);
+        if (updateResponse.getMessage().equals("Success")) {
+            System.out.println("User updated successfully.");
+        } else {
+            System.out.println("Error updating user: " + updateResponse.getMessage());
+        }
+
+    }
+
+
 
     public static void readInfoUsers(Scanner scanner) {
         Response<ArrayList<User>> response = UserRepository.getAllUsers();

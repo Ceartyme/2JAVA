@@ -167,11 +167,12 @@ public class UserRepository {
 
         try{
             conn = Repository.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Users SET Email = ?, Password = ?, Username = ? WHERE IdUser = ?;");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Users SET Email = ?, Password = ?, Username = ?, IdRole = ? WHERE IdUser = ?;");
             pstmt.setString(1, updatedUser.getEmail());
             pstmt.setString(2, updatedUser.getPassword());
             pstmt.setString(3, updatedUser.getUsername());
-            pstmt.setInt(4, updatedUser.getIdUser());
+            pstmt.setInt(4, updatedUser.getRoleId());
+            pstmt.setInt(5, updatedUser.getIdUser());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0){
                 return new Response<>(updatedUser);
