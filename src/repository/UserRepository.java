@@ -51,7 +51,7 @@ public class UserRepository {
         }
     }
 
-    public static Response<User> getUserByUsername(String username) {
+    public static Response<Boolean> getUserByUsername(String username) {
         Connection conn = null;
         try {
             conn = Repository.getConnection();
@@ -59,9 +59,9 @@ public class UserRepository {
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new Response<>(new User(rs.getInt("IdUser"), rs.getString("Email"), rs.getString("Password"), rs.getString("Username"), rs.getInt("IdRole")));
+                return new Response<>(true);
             }
-            return new Response<>("No user found with that username");
+            return new Response<>(false);
         } catch (SQLException e) {
             return new Response<>("SQL ERROR: " + e.getMessage());
         } finally {
@@ -69,7 +69,7 @@ public class UserRepository {
         }
     }
 
-    public static Response<User> getUserByEmail(String email) {
+    public static Response<Boolean> getUserByEmail(String email) {
         Connection conn = null;
         try {
             conn = Repository.getConnection();
@@ -77,9 +77,9 @@ public class UserRepository {
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new Response<>(new User(rs.getInt("IdUser"), rs.getString("Email"), rs.getString("Password"), rs.getString("Username"), rs.getInt("IdRole")));
+                return new Response<>(true);
             }
-            return new Response<>("No user found with that email");
+            return new Response<>(false);
         } catch (SQLException e) {
             return new Response<>("SQL ERROR: " + e.getMessage());
         } finally {

@@ -65,10 +65,13 @@ public class UserService {
             System.out.print("Enter Username: ");
             username = scanner.nextLine();
 
-            Response<User> response = UserRepository.getUserByUsername(username);
-            if (response.getMessage().equals("Success") && response.getValue() != null) {
+            Response<Boolean> response = UserRepository.getUserByUsername(username);
+            if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This username is already taken. Please choose another.");
-            }else{
+            } else if (!response.getMessage().equals("Success")) {
+                System.out.println("Error Message :" + response.getMessage());
+            }
+            else {
                 break;
             }
         }
@@ -76,11 +79,13 @@ public class UserService {
         while(true){
 
             email = InputService.emailInput(scanner);
-            Response<User> response = UserRepository.getUserByEmail(email);
+            Response<Boolean> response = UserRepository.getUserByEmail(email);
 
-            if (response.getMessage().equals("Success") && response.getValue() != null) {
+            if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This email is already taken. Please choose another.");
-            }else{
+            }else if(!response.getMessage().equals("Success")){
+                System.out.println("Error Message :" + response.getMessage());
+            } else{
                 Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(email);
 
                 if(!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()){
