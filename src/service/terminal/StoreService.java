@@ -164,11 +164,11 @@ public class StoreService {
         }
     }
 
-    public static void displayWorkersController(Scanner scanner){
+    public static void displayWorkersController(Scanner scanner) {
         System.out.println("Fetching all stores...");
         Response<ArrayList<Store>> storeResponse = StoreRepository.getAllStores();
 
-        if(!storeResponse.getMessage().equals("Success")){
+        if (!storeResponse.getMessage().equals("Success")) {
             System.out.println("Error : " + storeResponse.getMessage());
         }
 
@@ -229,8 +229,52 @@ public class StoreService {
                 }
             }
         }
-
-
     }
+
+    public static void deleteStoreController(Scanner scanner){
+            scanner.nextLine();
+            System.out.println("Fetching all stores...");
+
+            Response<ArrayList<Store>> storeResponse = StoreRepository.getAllStores();
+
+            if(!storeResponse.getMessage().equals("Success")) {
+                System.out.println("Error: " + storeResponse.getMessage());
+            }
+
+            ArrayList<Store> stores = storeResponse.getValue();
+
+            if (stores.isEmpty()) {
+                System.out.println("No stores available. Please create a store first.");
+            }
+
+            System.out.println("List of available stores:");
+            for (Store store : stores) {
+                System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
+            }
+
+            System.out.println("Enter the ID of the store for which you want to delete:");
+            int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+            boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
+            if (!storeExists) {
+                System.out.println("Invalid store ID. Operation cancelled.");
+                return;
+            }
+
+            String result = StoreRepository.deleteStore(storeId);
+
+            if(result.equals("Store deleted Successfully")) {
+                System.out.println("The store has been successfully deleted.");
+            }else{
+                System.out.println("Error: " + result);
+            }
+
+
+
+        }
+
+
+
+
 
 }

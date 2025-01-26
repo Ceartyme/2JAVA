@@ -28,8 +28,7 @@ public class TerminalInterface {
         System.out.println("║                                           ║");
         System.out.println("║          1. Manage Users                  ║");
         System.out.println("║          2. Manage Stores                 ║");
-        System.out.println("║          3. Add whitelisted email         ║");
-        System.out.println("║          4. Logout                        ║");
+        System.out.println("║          3. Logout                        ║");
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");
     }
@@ -40,8 +39,10 @@ public class TerminalInterface {
         System.out.println("║              (Manage Users)               ║");
         System.out.println("║                                           ║");
         System.out.println("║          1. Update User                   ║");
-        System.out.println("║          2. Delete User                   ║");
-        System.out.println("║          3. Back                          ║");
+        System.out.println("║          2. Add whitelisted email         ║");
+        System.out.println("║          3. Remove whitelisted email      ║");
+        System.out.println("║          4. Delete User                   ║");
+        System.out.println("║          5. Back                          ║");
         System.out.println("║                                           ║");
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");
@@ -81,4 +82,34 @@ public class TerminalInterface {
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");
     }
+
+    public static void showEmployeeMenu() {
+        System.out.println("╔═══════════════════════════════════════════╗");
+        System.out.println("║             Employee Options              ║");
+        System.out.println("║                                           ║");
+        System.out.println("║          1. Manager my store              ║");
+        System.out.println("║          2. Browse Inventory              ║");
+        System.out.println("║          3. Read informations about       ║");
+        System.out.println("║             users                         ║");
+        System.out.println("║          4. Update Profile                ║");
+        System.out.println("║          5. Delete Profile                ║");
+        System.out.println("║          6. Logout                        ║");
+        System.out.println("║                                           ║");
+        System.out.println("╚═══════════════════════════════════════════╝");
+    }
+
+    public static void managerMyStoreMenu() {
+        System.out.println("╔═══════════════════════════════════════════╗");
+        System.out.println("║             Employee Options              ║");
+        System.out.println("║             (Manage my store)             ║");
+        System.out.println("║                                           ║");
+        System.out.println("║          1. Display Workers               ║");
+        System.out.println("║          2. Increase items in stock       ║");
+        System.out.println("║          3. Decrease items in stock       ║");
+        System.out.println("║          4. Back                          ║");
+        System.out.println("║                                           ║");
+        System.out.println("╚═══════════════════════════════════════════╝");
+    }
+
+
 }

@@ -54,8 +54,6 @@ public class TerminalService {
                     ManageStoresActions(scanner);
                     break;
                 case 3:
-                    break;
-                case 4:
                     System.out.println("Goodbye !");
                     running = false;
                     break;
@@ -105,9 +103,15 @@ public class TerminalService {
                     UserService.updateControllerAdmin(scanner);
                     break;
                 case 2:
-                    UserService.deleteControllerAdmin(scanner);
+                    EmailService.addWhitelistEmailController(scanner);
                     break;
                 case 3:
+                    EmailService.removeWhitelistEmailController(scanner);
+                    break;
+                case 4:
+                    UserService.deleteControllerAdmin(scanner);
+                    break;
+                case 5:
                     running = false;
                     break;
             }
@@ -139,8 +143,10 @@ public class TerminalService {
                     InventoryService.deleteItemsFromStoreController(scanner);
                     break;
                 case 7:
+                    ItemService.deleteItemController(scanner);
                     break;
                 case 8:
+                    StoreService.deleteStoreController(scanner);
                     break;
                 case 9:
                     running = false;

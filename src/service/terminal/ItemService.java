@@ -1,5 +1,6 @@
 package service.terminal;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import model.Item;
@@ -32,5 +33,46 @@ public class ItemService {
         } else {
             System.out.println("Error creating item: " + createItemResponse.getMessage());
         }
+    }
+
+    public  static void deleteItemController(Scanner scanner){
+        scanner.nextLine();
+        System.out.println("Fetching all items...");
+
+        Response<ArrayList<Item>> allItems = ItemRepository.getAllItems();
+
+        if(!allItems.getMessage().equals("Success")){
+            System.out.println("Error fetching all items: " + allItems.getMessage());
+        }
+
+        ArrayList<Item> items = allItems.getValue();
+
+        if(items.isEmpty()){
+            System.out.println("Items list is empty. Operation cancelled.");
+        }
+
+        System.out.println("List of available items:");
+        for (Item item : items) {
+            System.out.printf("ID: %d | Name: %s | Price: %.2f%n", item.getIdItem(), item.getName(), item.getPrice());
+        }
+
+        System.out.println("Enter the ID of the item you want to delete:");
+        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean itemExists = items.stream().anyMatch(item -> item.getIdItem() == itemId);
+        if (!itemExists) {
+            System.out.println("Invalid item ID. Deletion cancelled.");
+            return;
+        }
+
+        String result = ItemRepository.deleteItem(itemId);
+        if (result.equals("Item deleted Successfully")) {
+            System.out.println("Item has been successfully deleted.");
+        } else {
+            System.out.println("Error deleting item: " + result);
+        }
+
+
+
     }
 }
