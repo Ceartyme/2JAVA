@@ -3,10 +3,7 @@ package repository;
 import model.Inventory;
 import model.Response;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class InventoryRepository {
@@ -30,4 +27,53 @@ public class InventoryRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String addOrUpdateItemsInStore(int idStore, int idItem, int amount){
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO IStore.Inventories (IdStore, IdItem, Amount) VALUES (?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE Amount = Amount + ?;");
+            pstmt.setInt(1, idStore);
+            pstmt.setInt(2, idItem);
+            pstmt.setInt(3, amount);
+            pstmt.setInt(4, amount);
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                return "Item successfully added or updated in the store";
+            } else {
+                return "No rows affected. Operation failed.";
+            }
+        }catch (SQLException e) {
+            return "SQL ERROR: " + e.getMessage();
+        } finally {
+            Repository.closeConnection(conn);
+        }
+
+    }
+
+    public static String deleteItemFromStore(int idStore, int idItem) {
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "DELETE FROM IStore.Inventories WHERE IdStore = ? AND IdItem = ?;"
+            );
+            pstmt.setInt(1, idStore);
+            pstmt.setInt(2, idItem);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                return "Item deleted successfully";
+            } else {
+                return "No matching item found in the store";
+            }
+        } catch (SQLException e) {
+            return "SQL ERROR: " + e.getMessage();
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
 }

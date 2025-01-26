@@ -20,6 +20,26 @@ public class InputService{
         }
     }
 
+    public static double doubleInput(double minimum, Scanner input) {
+        try {
+            System.out.println("Enter a number greater than " + minimum + ": ");
+            double response = input.nextDouble();
+            if (response < minimum) {
+                System.out.println("The number is less than the minimum allowed. Please try again.");
+                return doubleInput(minimum, input);
+            }
+            return response;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            input.nextLine();
+            return doubleInput(minimum, input);
+        }
+    }
+
+
+
+
+
     public static String emailInput(Scanner input){
         System.out.println("Enter email address : ");
         String email=input.next();

@@ -54,11 +54,13 @@ public class TerminalInterface {
         System.out.println("║                                           ║");
         System.out.println("║          1. Create Store                  ║");
         System.out.println("║          2. Add Employees to Store        ║");
-        System.out.println("║          3. Add Items to Store            ║");
-        System.out.println("║          4. Display Employees             ║");
-        System.out.println("║          5. Delete Items to Store         ║");
-        System.out.println("║          6. Delete Store                  ║");
-        System.out.println("║          7. Back                          ║");
+        System.out.println("║          3. Create Items                  ║");
+        System.out.println("║          4. Add Items to Store            ║");
+        System.out.println("║          5. Display Workers               ║");
+        System.out.println("║          6. Delete Items to Store         ║");
+        System.out.println("║          7. Delete Items                  ║");
+        System.out.println("║          8. Delete Store                  ║");
+        System.out.println("║          9. Back                          ║");
         System.out.println("║                                           ║");
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");

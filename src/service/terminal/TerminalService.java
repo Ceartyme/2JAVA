@@ -1,6 +1,7 @@
 package service.terminal;
 
 import model.User;
+import repository.InventoryRepository;
 import service.InputService;
 import ui.TerminalInterface;
 
@@ -117,7 +118,7 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerStores();
-            int choice = InputService.intInput(1, 7, scanner);
+            int choice = InputService.intInput(1, 9, scanner);
             switch (choice) {
                 case 1:
                     StoreService.createStoreController(scanner);
@@ -126,14 +127,22 @@ public class TerminalService {
                     StoreService.addEmployeesController(scanner);
                     break;
                 case 3:
+                    ItemService.createItemController(scanner);
                     break;
                 case 4:
+                    InventoryService.addOrUpdateItemsToStoreController(scanner);
                     break;
                 case 5:
+                    StoreService.displayWorkersController(scanner);
                     break;
                 case 6:
+                    InventoryService.deleteItemsFromStoreController(scanner);
                     break;
                 case 7:
+                    break;
+                case 8:
+                    break;
+                case 9:
                     running = false;
                     break;
             }

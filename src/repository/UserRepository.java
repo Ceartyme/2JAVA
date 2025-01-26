@@ -115,6 +115,30 @@ public class UserRepository {
         }
     }
 
+
+    public static Response<ArrayList<User>> getAllAdmin(){
+        Connection conn = null;
+
+        ArrayList<User> users = new ArrayList<>();
+        try {
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdRole=1;");
+            if(!rs.next()){
+                return new Response<>("Error not any administrator in database");
+            }
+            do{
+                User t = new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),rs.getInt("IdRole"));
+                users.add(t);
+            }while(rs.next());
+            return new Response<>(users);
+        } catch (SQLException e) {
+            return new Response<>("SQL Error : "+e.getMessage());
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
     public static Response<User> createUser(String username,String email, String password, int idRole){
         Connection conn =null;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
