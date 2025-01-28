@@ -1,7 +1,6 @@
 package service.terminal;
 
 import model.User;
-import repository.InventoryRepository;
 import service.InputService;
 import ui.TerminalInterface;
 
@@ -134,7 +133,7 @@ public class TerminalService {
                     ItemService.createItemController(scanner);
                     break;
                 case 4:
-                    InventoryService.addOrUpdateItemsToStoreController(scanner);
+                    InventoryService.createItemsToStoreController(scanner);
                     break;
                 case 5:
                     StoreService.displayWorkersController(scanner);
@@ -197,8 +196,10 @@ public class TerminalService {
                     StoreService.displayWorkersEmployeesController(loggedUser.getIdUser(), scanner);
                     break;
                 case 2:
+                    InventoryService.increaseItemController(loggedUser.getIdUser(), scanner);
                     break;
                 case 3:
+                    InventoryService.decreaseItemController(loggedUser.getIdUser(), scanner);
                     break;
                 case 4:
                     running = false;

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InventoryService {
-    public static void addOrUpdateItemsToStoreController(Scanner scanner){
+    public static void createItemsToStoreController(Scanner scanner){
         scanner.nextLine();
         System.out.println("Fetching all stores...");
 
@@ -81,13 +81,12 @@ public class InventoryService {
                 continue;
             }
 
-            System.out.println("Enter the quantity of the item:");
-            int quantity = InputService.intInput(1, Integer.MAX_VALUE, scanner);
 
-            String addItemResult = InventoryRepository.addOrUpdateItemsInStore(storeId, itemId, quantity);
+
+            String addItemResult = InventoryRepository.createItemsInStore(storeId, itemId, 0);
 
             if (addItemResult.equals("Item successfully added or updated in the store")) {
-                System.out.printf("Item ID %d added to store ID %d with quantity %d.%n", itemId, storeId, quantity);
+                System.out.printf("Item ID %d added to store ID %d with quantity %d.%n", itemId, storeId, 0);
             } else {
                 System.out.println("Error adding item: " + addItemResult);
             }
@@ -164,5 +163,175 @@ public class InventoryService {
             System.out.println("Error: " + deleteResult);
         }
 
+    }
+
+    public static void increaseItemController(int loggedUserid, Scanner scanner){
+        System.out.println("Fetching all stores...");
+
+        Response<ArrayList<Store>> storeResponse = StoreRepository.getStoresByEmployeeId(loggedUserid);
+
+        if (!storeResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + storeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+
+        if (stores.isEmpty()) {
+            System.out.println("You are not assigned to any store.");
+            return;
+        }
+
+        System.out.println("Available stores:");
+        for (Store store : stores) {
+            System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
+        }
+
+        System.out.println("Enter the ID of one of your stores for which you want to increase items:");
+        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
+
+        if (!isValidStore) {
+            System.out.println("Error: Invalid store ID.");
+            return;
+        }
+
+        Response<ArrayList<Inventory>> stockResponse = InventoryRepository.getItemsByStore(storeId);
+        if (!stockResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + stockResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Inventory> stockList = stockResponse.getValue();
+
+        if (stockList.isEmpty()) {
+            System.out.println("No items found in this store.");
+            return;
+        }
+
+        System.out.println("Items available in the store:");
+        for (Inventory inventory : stockList) {
+
+            Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
+            if (!itemResponse.getMessage().equals("Success")) {
+                System.out.println("Error: " + itemResponse.getMessage());
+                continue;
+            }
+
+            Item item = itemResponse.getValue();
+            System.out.println("Item ID: " + item.getIdItem() +
+                    " | Name: " + item.getName() +
+                    " | Price: $" + item.getPrice() +
+                    " | Amount: " + inventory.getAmount());
+        }
+
+        System.out.println("Enter the Item ID of the item you want to increase:");
+        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
+        if (!itemExists) {
+            System.out.println("Invalid item ID. Operation cancelled.");
+            return;
+        }
+
+        System.out.println("Enter the quantity to increase (positive integer):");
+        int increaseAmount = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        String result = InventoryRepository.increaseItemInStore(storeId, itemId, increaseAmount);
+
+        if (!result.equals("Item quantity successfully increased.")) {
+            System.out.println("Error: " + result);
+        } else {
+            System.out.println("Item quantity increased successfully!");
+        }
+
+
+    }
+
+    public static void decreaseItemController(int loggedUserid, Scanner scanner){
+        System.out.println("Fetching all stores...");
+
+        Response<ArrayList<Store>> storeResponse = StoreRepository.getStoresByEmployeeId(loggedUserid);
+
+        if (!storeResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + storeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+
+        if (stores.isEmpty()) {
+            System.out.println("You are not assigned to any store.");
+            return;
+        }
+
+        System.out.println("Available stores:");
+        for (Store store : stores) {
+            System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
+        }
+
+        System.out.println("Enter the ID of one of your stores for which you want to decrease items:");
+        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
+
+        if (!isValidStore) {
+            System.out.println("Error: Invalid store ID.");
+            return;
+        }
+
+        Response<ArrayList<Inventory>> stockResponse = InventoryRepository.getItemsByStore(storeId);
+        if (!stockResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + stockResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Inventory> stockList = stockResponse.getValue();
+
+        if (stockList.isEmpty()) {
+            System.out.println("No items found in this store.");
+            return;
+        }
+
+        System.out.println("Items available in the store:");
+        for (Inventory inventory : stockList) {
+            Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
+            if (!itemResponse.getMessage().equals("Success")) {
+                System.out.println("Error: " + itemResponse.getMessage());
+                continue;
+            }
+
+            Item item = itemResponse.getValue();
+            System.out.println("Item ID: " + item.getIdItem() +
+                    " | Name: " + item.getName() +
+                    " | Price: $" + item.getPrice() +
+                    " | Amount: " + inventory.getAmount());
+        }
+
+        System.out.println("Enter the Item ID of the item you want to decrease:");
+        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
+        if (!itemExists) {
+            System.out.println("Invalid item ID. Operation cancelled.");
+            return;
+        }
+
+        System.out.println("Enter the quantity to decrease (positive integer):");
+        int decreaseAmount = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        if ((itemId-decreaseAmount) > 0){
+            System.out.println("The item has no stock left to decrease.");
+            return;
+        }
+
+        String result = InventoryRepository.decreaseItemInStore(storeId, itemId, decreaseAmount);
+
+        if (!result.equals("Item quantity successfully decreased.")) {
+            System.out.println("Error: " + result);
+        } else {
+            System.out.println("Item quantity decreased successfully!");
+        }
     }
 }
