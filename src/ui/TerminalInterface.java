@@ -74,7 +74,7 @@ public class TerminalInterface {
         System.out.println("║               User Options                ║");
         System.out.println("║                                           ║");
         System.out.println("║          1. Browse Inventory              ║");
-        System.out.println("║          2. Read informations about       ║");
+        System.out.println("║          2. Read information about        ║");
         System.out.println("║             users                         ║");
         System.out.println("║          3. Update Profile                ║");
         System.out.println("║          4. Delete Profile                ║");
@@ -89,7 +89,7 @@ public class TerminalInterface {
         System.out.println("║                                           ║");
         System.out.println("║          1. Manager my store              ║");
         System.out.println("║          2. Browse Inventory              ║");
-        System.out.println("║          3. Read informations about       ║");
+        System.out.println("║          3. Read information about        ║");
         System.out.println("║             users                         ║");
         System.out.println("║          4. Update Profile                ║");
         System.out.println("║          5. Delete Profile                ║");
