@@ -231,6 +231,80 @@ public class StoreService {
         }
     }
 
+    public static void displayWorkersEmployeesController(int loggedUserid, Scanner scanner) {
+        System.out.println("Fetching all stores...");
+
+        Response<ArrayList<Store>> storeResponse = StoreRepository.getStoresByEmployeeId(loggedUserid);
+
+        if (!storeResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + storeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+
+        if (stores.isEmpty()) {
+            System.out.println("You are not assigned to any store.");
+            return;
+        }
+
+        System.out.println("Available stores:");
+        for (Store store : stores) {
+            System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
+        }
+
+        System.out.println("Enter the ID of one of your stores for which you want to view workers:");
+        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+
+        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
+
+        if (!isValidStore) {
+            System.out.println("Error: Invalid store ID.");
+            return;
+        }
+
+        System.out.println("\nFetching all administrators...");
+        Response<ArrayList<User>> adminResponse = UserRepository.getAllAdmin();
+
+        if (!adminResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + adminResponse.getMessage());
+        } else {
+            ArrayList<User> admins = adminResponse.getValue();
+
+            if (admins.isEmpty()) {
+                System.out.println("No administrators found.");
+            } else {
+                System.out.println("\nList of administrators:");
+                for (User admin : admins) {
+                    System.out.printf("ID: %d | Username: %s | Email: %s%n",
+                            admin.getIdUser(), admin.getUsername(), admin.getEmail());
+                }
+            }
+        }
+
+        System.out.println("\nFetching employees for the selected store...");
+        Response<ArrayList<User>> employeesResponse = WorkingRepository.getEmployeesFromStore(storeId);
+
+        if (!employeesResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + employeesResponse.getMessage());
+        } else {
+            ArrayList<User> employees = employeesResponse.getValue();
+
+            if (employees.isEmpty()) {
+                System.out.println("No employees found for this store.");
+            } else {
+                System.out.println("\nList of employees in the store:");
+                for (User employee : employees) {
+                    System.out.printf("ID: %d | Username: %s | Email: %s%n",
+                            employee.getIdUser(), employee.getUsername(), employee.getEmail());
+                }
+            }
+        }
+
+
+
+    }
+
     public static void deleteStoreController(Scanner scanner){
             scanner.nextLine();
             System.out.println("Fetching all stores...");

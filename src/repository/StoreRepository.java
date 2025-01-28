@@ -28,6 +28,37 @@ public class StoreRepository {
         }
     }
 
+    public static Response<ArrayList<Store>> getStoresByEmployeeId(int employeeId) {
+        Connection conn = null;
+        ArrayList<Store> stores = new ArrayList<>();
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "SELECT s.IdStore, s.Name FROM IStore.Stores s JOIN IStore.WORKING es ON s.IdStore = es.IdStore WHERE es.IdUser = ?"
+            );
+            pstmt.setInt(1, employeeId);
+            ResultSet rs = pstmt.executeQuery();
+
+
+            if (!rs.next()) {
+                return new Response<>("No stores found for the given employee ID.");
+            }
+
+            do {
+                int id = rs.getInt("IdStore");
+                String name = rs.getString("Name");
+                stores.add(new Store(id, name));
+            } while (rs.next());
+
+            return new Response<>(stores);
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+
     public static Response<Store> createStore(String name){
         Connection conn = null;
         try{

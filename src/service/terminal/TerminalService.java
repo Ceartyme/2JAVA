@@ -97,7 +97,7 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerUsers();
-            int choice = InputService.intInput(1, 3, scanner);
+            int choice = InputService.intInput(1, 5, scanner);
             switch (choice) {
                 case 1:
                     UserService.updateControllerAdmin(scanner);
@@ -151,6 +151,59 @@ public class TerminalService {
                 case 9:
                     running = false;
                     break;
+            }
+        }
+    }
+
+    public static void EmployeeActions(Scanner scanner, User loggedUser) {
+        boolean running = true;
+        while (running) {
+            TerminalInterface.showEmployeeMenu();
+            int choice = InputService.intInput(1, 6, scanner);
+
+            switch (choice) {
+                case 1:
+                    TerminalService.manageMyStore(scanner, loggedUser);
+                    break;
+                case 2:
+                    StoreService.BrowseInventory(scanner);
+                    break;
+                case 3:
+                    UserService.readInfoUsers(scanner);
+                    break;
+                case 4:
+                    UserService.updateControllerUser(scanner, loggedUser);
+                    break;
+                case 5:
+                    UserService.deleteController(scanner, loggedUser);
+                    break;
+                case 6:
+                    System.out.println("Logout !");
+                    running = false;
+                    break;
+
+            }
+        }
+    }
+
+    public static void manageMyStore(Scanner scanner, User loggedUser) {
+        boolean running = true;
+        while (running) {
+            TerminalInterface.manageMyStoreMenu();
+            int choice = InputService.intInput(1, 4, scanner);
+
+            switch (choice) {
+                case 1:
+                    StoreService.displayWorkersEmployeesController(loggedUser.getIdUser(), scanner);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    running = false;
+                    break;
+
             }
         }
     }

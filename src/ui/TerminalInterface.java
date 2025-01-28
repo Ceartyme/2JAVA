@@ -98,7 +98,7 @@ public class TerminalInterface {
         System.out.println("╚═══════════════════════════════════════════╝");
     }
 
-    public static void managerMyStoreMenu() {
+    public static void manageMyStoreMenu() {
         System.out.println("╔═══════════════════════════════════════════╗");
         System.out.println("║             Employee Options              ║");
         System.out.println("║             (Manage my store)             ║");

@@ -33,7 +33,7 @@ public class UserService {
                         TerminalService.adminActions(scanner);
                         break;
                     case EMPLOYEE:
-                        TerminalService.userActions(scanner, userLogged);
+                        TerminalService.EmployeeActions(scanner, userLogged);
                         break;
                     case USER:
                         TerminalService.userActions(scanner, userLogged);
