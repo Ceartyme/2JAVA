@@ -1,6 +1,5 @@
 package repository;
 
-import model.Item;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import model.Response;
@@ -51,7 +50,7 @@ public class UserRepository {
         }
     }
 
-    public static Response<Boolean> getUserByUsername(String username) {
+    public static Response<Boolean> isUsernameExisting(String username) {
         Connection conn = null;
         try {
             conn = Repository.getConnection();
@@ -69,7 +68,7 @@ public class UserRepository {
         }
     }
 
-    public static Response<Boolean> getUserByEmail(String email) {
+    public static Response<Boolean> isEmailExisting(String email) {
         Connection conn = null;
         try {
             conn = Repository.getConnection();

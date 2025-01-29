@@ -62,7 +62,7 @@ public class UserService {
             System.out.print("Enter Username: ");
             username = scanner.nextLine();
 
-            Response<Boolean> response = UserRepository.getUserByUsername(username);
+            Response<Boolean> response = UserRepository.isUsernameExisting(username);
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This username is already taken. Please choose another.");
             } else if (!response.getMessage().equals("Success")) {
@@ -76,7 +76,7 @@ public class UserService {
         while(true){
 
             email = InputService.emailInput(scanner);
-            Response<Boolean> response = UserRepository.getUserByEmail(email);
+            Response<Boolean> response = UserRepository.isEmailExisting(email);
 
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This email is already taken. Please choose another.");
@@ -131,7 +131,7 @@ public class UserService {
                 newUsername = loggedUser.getUsername();
                 break;
             }else{
-                Response<Boolean> usernameCheckResponse = UserRepository.getUserByUsername(newUsername);
+                Response<Boolean> usernameCheckResponse = UserRepository.isUsernameExisting(newUsername);
                 if (usernameCheckResponse.getMessage().equals("Success") && usernameCheckResponse.getValue()) {
                     System.out.println("This username is already taken. Please choose another.");
                 } else if (!usernameCheckResponse.getMessage().equals("Success")) {
@@ -158,7 +158,7 @@ public class UserService {
             } else{
 
 
-                Response<Boolean> response = UserRepository.getUserByEmail(newEmail);
+                Response<Boolean> response = UserRepository.isEmailExisting(newEmail);
 
                 if (response.getMessage().equals("Success") && response.getValue()) {
                     System.out.println("This email is already taken. Please choose another.");
@@ -231,7 +231,7 @@ public class UserService {
                 newUsername = userToUpdate.getUsername();
                 break;
             }else{
-                Response<Boolean> usernameCheckResponse = UserRepository.getUserByUsername(newUsername);
+                Response<Boolean> usernameCheckResponse = UserRepository.isUsernameExisting(newUsername);
                 if (usernameCheckResponse.getMessage().equals("Success") && usernameCheckResponse.getValue()) {
                     System.out.println("This username is already taken. Please choose another.");
                 } else if (!usernameCheckResponse.getMessage().equals("Success")) {
@@ -258,7 +258,7 @@ public class UserService {
             } else {
 
 
-                Response<Boolean> CheckEmailResponse = UserRepository.getUserByEmail(newEmail);
+                Response<Boolean> CheckEmailResponse = UserRepository.isEmailExisting(newEmail);
 
                 if (response.getMessage().equals("Success") && CheckEmailResponse.getValue()) {
                     System.out.println("This email is already taken. Please choose another.");
