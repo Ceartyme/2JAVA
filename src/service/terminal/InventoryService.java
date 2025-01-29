@@ -7,6 +7,7 @@ import model.Store;
 import repository.ItemRepository;
 import repository.InventoryRepository;
 import repository.StoreRepository;
+import repository.UserRepository;
 import service.InputService;
 
 import java.util.ArrayList;
@@ -36,8 +37,9 @@ public class InventoryService {
             System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
         }
 
-        System.out.println("Enter the ID of the store to which you want to add items:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean storeExists = Stores.stream().anyMatch(store -> store.getIdStore() == storeId);
         if (!storeExists) {
@@ -69,7 +71,9 @@ public class InventoryService {
 
         System.out.println("Enter the ID of the item to which you want to add items (or 0 to finish):");
         while (true) {
-            int itemId = InputService.intInput(0, Integer.MAX_VALUE, scanner);
+            Response<ArrayList<Integer>> itemIdResponse = ItemRepository.getIdItems();
+
+            int itemId = InputService.idInput(scanner, itemIdResponse);
             if (itemId == 0) {
                 System.out.println("Finished adding items to store.");
                 break;
@@ -113,8 +117,9 @@ public class InventoryService {
             System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
         }
 
-        System.out.println("Enter the ID of the store to which you want to delete items:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean storeExists = Stores.stream().anyMatch(store -> store.getIdStore() == storeId);
         if (!storeExists) {
@@ -136,10 +141,13 @@ public class InventoryService {
         }
 
         System.out.println("Items in the store:");
+        ArrayList<Integer> ListIds = new ArrayList<>();
         for (Inventory inventory : inventories) {
             Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
             if (itemResponse.getMessage().equals("Success")) {
+
                 Item item = itemResponse.getValue();
+                ListIds.add(inventory.getIdItem());
                 System.out.printf("Item ID: %d | Name: %s | Price: %.2f | Amount: %d%n",
                         item.getIdItem(), item.getName(), item.getPrice(), inventory.getAmount());
             } else {
@@ -147,8 +155,9 @@ public class InventoryService {
             }
         }
 
-        System.out.println("Enter the ID of the item you want to delete:");
-        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
+        int itemId = InputService.idInput(scanner, itemIdResponse);
+
 
         boolean itemExists = inventories.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
         if (!itemExists) {
@@ -187,8 +196,9 @@ public class InventoryService {
             System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
         }
 
-        System.out.println("Enter the ID of one of your stores for which you want to increase items:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
 
@@ -211,6 +221,7 @@ public class InventoryService {
         }
 
         System.out.println("Items available in the store:");
+        ArrayList<Integer> ListIds = new ArrayList<>();
         for (Inventory inventory : stockList) {
 
             Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
@@ -220,14 +231,15 @@ public class InventoryService {
             }
 
             Item item = itemResponse.getValue();
+            ListIds.add(inventory.getIdItem());
             System.out.println("Item ID: " + item.getIdItem() +
                     " | Name: " + item.getName() +
                     " | Price: $" + item.getPrice() +
                     " | Amount: " + inventory.getAmount());
         }
 
-        System.out.println("Enter the Item ID of the item you want to increase:");
-        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
+        int itemId = InputService.idInput(scanner, itemIdResponse);
 
         boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
         if (!itemExists) {
@@ -271,8 +283,9 @@ public class InventoryService {
             System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
         }
 
-        System.out.println("Enter the ID of one of your stores for which you want to decrease items:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
 
@@ -295,6 +308,7 @@ public class InventoryService {
         }
 
         System.out.println("Items available in the store:");
+        ArrayList<Integer> ListIds = new ArrayList<>();
         for (Inventory inventory : stockList) {
             Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
             if (!itemResponse.getMessage().equals("Success")) {
@@ -303,14 +317,15 @@ public class InventoryService {
             }
 
             Item item = itemResponse.getValue();
+            ListIds.add(inventory.getIdItem());
             System.out.println("Item ID: " + item.getIdItem() +
                     " | Name: " + item.getName() +
                     " | Price: $" + item.getPrice() +
                     " | Amount: " + inventory.getAmount());
         }
 
-        System.out.println("Enter the Item ID of the item you want to decrease:");
-        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
+        int itemId = InputService.idInput(scanner, itemIdResponse);
 
         boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
         if (!itemExists) {

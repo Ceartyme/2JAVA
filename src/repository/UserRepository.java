@@ -227,6 +227,34 @@ public class UserRepository {
         }
     }
 
+
+    public static Response<ArrayList<Integer>> getIdUser() {
+        Connection conn = null;
+
+        ArrayList<Integer> idList = new ArrayList<>();
+
+        try{
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT idUser FROM IStore.Users");
+
+            while (rs.next()) {
+                idList.add(rs.getInt("IdUser"));
+            }
+
+            if (idList.isEmpty()) {
+                return new Response<>("No users found.");
+            }
+
+            return new Response<>(idList);
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+
+    }
+
 }
 
 

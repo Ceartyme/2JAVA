@@ -206,8 +206,9 @@ public class UserService {
         readInfoUsers(scanner);
 
 
-        int idUser = InputService.intInput(1, 2, scanner);
-        scanner.nextLine();
+        Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
+
+        int idUser = InputService.idInput(scanner, userIdResponse);
 
         Response<User> response = UserRepository.getUserById(idUser);
 
@@ -358,7 +359,9 @@ public class UserService {
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
 
-        int idUser = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
+
+        int idUser = InputService.idInput(scanner, userIdResponse);
 
         Response<User> response = UserRepository.getUserById(idUser);
 

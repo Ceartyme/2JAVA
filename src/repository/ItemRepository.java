@@ -124,4 +124,31 @@ public class ItemRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static Response<ArrayList<Integer>> getIdItems() {
+        Connection conn = null;
+
+        ArrayList<Integer> idList = new ArrayList<>();
+
+        try{
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT IdItem FROM IStore.Items");
+
+            while (rs.next()) {
+                idList.add(rs.getInt("IdItem"));
+            }
+
+            if (idList.isEmpty()) {
+                return new Response<>("No items found.");
+            }
+
+            return new Response<>(idList);
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+
+    }
 }

@@ -6,6 +6,7 @@ import java.util.Scanner;
 import model.Item;
 import model.Response;
 import repository.ItemRepository;
+import repository.UserRepository;
 import service.InputService;
 
 public class ItemService {
@@ -56,16 +57,19 @@ public class ItemService {
             System.out.printf("ID: %d | Name: %s | Price: %.2f%n", item.getIdItem(), item.getName(), item.getPrice());
         }
 
-        System.out.println("Enter the ID of the item you want to delete:");
-        int itemId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> itemIdResponse = ItemRepository.getIdItems();
 
-        boolean itemExists = items.stream().anyMatch(item -> item.getIdItem() == itemId);
+        int idItem = InputService.idInput(scanner, itemIdResponse);
+
+
+
+        boolean itemExists = items.stream().anyMatch(item -> item.getIdItem() == idItem);
         if (!itemExists) {
             System.out.println("Invalid item ID. Deletion cancelled.");
             return;
         }
 
-        String result = ItemRepository.deleteItem(itemId);
+        String result = ItemRepository.deleteItem(idItem);
         if (result.equals("Item deleted Successfully")) {
             System.out.println("Item has been successfully deleted.");
         } else {

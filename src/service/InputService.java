@@ -1,5 +1,8 @@
 package service;
 
+import model.Response;
+
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -55,4 +58,37 @@ public class InputService{
         String emailRegex = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,3}$";
         return Pattern.compile(emailRegex).matcher(email).matches();
     }
+
+    public static int idInput(Scanner scanner, Response<ArrayList<Integer>> response) {
+        if (!response.getMessage().equals("Success") || response.getValue() == null || response.getValue().isEmpty()) {
+            System.out.println("Error: No valid IDs available.");
+            return -1;
+        }
+
+        ArrayList<Integer> validIds = response.getValue();
+        int input;
+
+        while (true) {
+            System.out.print("Enter a valid ID (or 0 to cancel): ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a numeric ID.");
+                scanner.next();
+                continue;
+            }
+
+            input = scanner.nextInt();
+
+            if (input == 0) {
+                return 0;
+            }
+
+            if (validIds.contains(input)) {
+                return input;
+            } else {
+                System.out.println("Invalid ID. Please enter a valid ID");
+            }
+        }
+    }
+
 }

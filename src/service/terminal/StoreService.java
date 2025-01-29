@@ -30,9 +30,13 @@ public class StoreService {
             System.out.println( i + " - " + store.getName());
         }
 
-        int choice = InputService.intInput(1, stores.toArray().length, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
 
+        int choice = InputService.idInput(scanner, storeIdResponse);
+
+        System.out.println(choice);
         Store selectedStore = stores.get(choice - 1);
+        System.out.println("Selected store : " + selectedStore.getName());
 
 
         Response<ArrayList<Inventory>> inventoryResponse = InventoryRepository.getItemsByStore(selectedStore.getIdStore());
@@ -107,8 +111,9 @@ public class StoreService {
             System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
         }
 
-        System.out.println("Enter the ID of the store to which you want to add an employee:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
         if (!storeExists) {
@@ -138,8 +143,9 @@ public class StoreService {
                     user.getRole());
         }
 
-        System.out.println("Enter the ID of the user you want to hire:");
-        int userId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
+
+        int userId = InputService.idInput(scanner, userIdResponse);
 
 
         boolean userExists = users.stream().anyMatch(user -> user.getIdUser() == userId);
@@ -152,16 +158,18 @@ public class StoreService {
         String hireResult = WorkingRepository.hire(storeId, userId);
         if (hireResult.equals("User hired successfully")) {
             System.out.println("The user has been successfully hired and assigned to the store.");
+
+            String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 2);
+            if (updateRoleResult.equals("User role updated successfully")) {
+                System.out.println("The user's role has been successfully updated to EMPLOYEE.");
+            }else {
+                System.out.println("Error updating user's role: " + updateRoleResult);
+            }
         } else {
             System.out.println("Error hiring user: " + hireResult);
         }
 
-        String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 2);
-        if (updateRoleResult.equals("User role updated successfully")) {
-            System.out.println("The user's role has been successfully updated to EMPLOYEE.");
-        }else {
-            System.out.println("Error updating user's role: " + updateRoleResult);
-        }
+
     }
 
     public static void displayWorkersController(Scanner scanner) {
@@ -183,8 +191,9 @@ public class StoreService {
             System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
         }
 
-        System.out.println("Enter the ID of the store for which you want to view workers:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
         if (!storeExists) {
@@ -253,8 +262,9 @@ public class StoreService {
             System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
         }
 
-        System.out.println("Enter the ID of one of your stores for which you want to view workers:");
-        int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
+
+        int storeId = InputService.idInput(scanner, storeIdResponse);
 
         boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
 
@@ -326,8 +336,9 @@ public class StoreService {
                 System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
             }
 
-            System.out.println("Enter the ID of the store for which you want to delete:");
-            int storeId = InputService.intInput(1, Integer.MAX_VALUE, scanner);
+            Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
+            int storeId = InputService.idInput(scanner, storeIdResponse);
 
             boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
             if (!storeExists) {

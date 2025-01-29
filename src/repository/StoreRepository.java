@@ -77,6 +77,28 @@ public class StoreRepository {
         }
     }
 
+    public static Response<ArrayList<Integer>> getIdStoresByEmployeeId(int employeeId) {
+        Response<ArrayList<Store>> storeResponse = getStoresByEmployeeId(employeeId);
+
+        if (!storeResponse.getMessage().equals("Success")) {
+            return new Response<>(storeResponse.getMessage());
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+        ArrayList<Integer> storeIds = new ArrayList<>();
+
+        for (Store store : stores) {
+            storeIds.add(store.getIdStore());
+        }
+
+        if (storeIds.isEmpty()) {
+            return new Response<>("No store IDs found for the given employee.");
+        }
+
+        return new Response<>(storeIds);
+    }
+
+
     public static String deleteStore(int id){
         Connection conn = null;
         try{
@@ -111,5 +133,32 @@ public class StoreRepository {
         }finally {
             Repository.closeConnection(conn);
         }
+    }
+
+    public static Response<ArrayList<Integer>> getIdStores() {
+        Connection conn = null;
+
+        ArrayList<Integer> idList = new ArrayList<>();
+
+        try{
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT IdStore FROM IStore.Stores");
+
+            while (rs.next()) {
+                idList.add(rs.getInt("IdStore"));
+            }
+
+            if (idList.isEmpty()) {
+                return new Response<>("No stores found.");
+            }
+
+            return new Response<>(idList);
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+
     }
 }
