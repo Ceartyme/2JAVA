@@ -64,4 +64,6 @@ public class ItemService {
             System.out.println("Error deleting item: " + result);
         }
     }
+
+    public static void updateItemController(Scanner scanner){}
 }

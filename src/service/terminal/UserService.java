@@ -168,10 +168,16 @@ public class UserService {
     }
 
     public static void updateControllerAdmin(Scanner scanner) {
+
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
         int idUser = InputService.idInput(scanner, userIdResponse);
+
+        if (idUser == 0){
+            return;
+        }
+
         Response<User> response = UserRepository.getUserById(idUser);
         if (!response.getMessage().equals("Success")){
             System.out.println("Error Message :" + response.getMessage());
@@ -187,6 +193,7 @@ public class UserService {
         );
 
         while (true){
+            scanner.nextLine();
             System.out.println("Enter new Username (or press enter to keep current) :");
             String newUsername = scanner.nextLine().trim();
             if (newUsername.isEmpty()){

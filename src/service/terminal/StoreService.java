@@ -142,9 +142,11 @@ public class StoreService {
                 System.out.println("Error updating user's role: " + updateRoleResult);
             }
         } else {
-            System.out.println("Error hiring user: " + hireResult);
+            System.out.println("Error hiring user: User already hire in this store");
         }
     }
+
+    public static void removeEmployeesController(Scanner scanner){}
 
     public static void displayWorkersController(Scanner scanner) {
         System.out.println("Fetching all stores...");
@@ -300,5 +302,69 @@ public class StoreService {
         }else{
             System.out.println("Error: " + result);
         }
+    }
+
+
+
+    public static void updateStoreController(Scanner scanner){
+        System.out.println("Fetching all stores...");
+
+        Response<ArrayList<Store>> storeResponse = StoreRepository.getAllStores();
+
+        if (!storeResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + storeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+        if (stores.isEmpty()) {
+            System.out.println("No stores available in the system.");
+            return;
+        }
+
+        System.out.println("Available stores:");
+        for (Store store : stores) {
+            System.out.println("ID: " + store.getIdStore() + " | Store Name: " + store.getName());
+        }
+
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+        int storeId = InputService.idInput(scanner, storeIdResponse);
+
+        if (storeId == 0){
+            System.out.println("Invalid store ID. Operation cancelled.");
+            return;
+        }
+
+        Response<Store> selectedStoreResponse = StoreRepository.getStoreById(storeId);
+
+        if (!selectedStoreResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + selectedStoreResponse.getMessage());
+            return;
+        }
+
+        Store selectedStore = selectedStoreResponse.getValue();
+
+        scanner.nextLine();
+        System.out.println("Enter the new name for the store:");
+        String newName = scanner.nextLine().trim();
+
+        if (newName.isEmpty()) {
+            System.out.println("Error: Store name cannot be empty.");
+            return;
+        }
+
+        selectedStore.setName(newName);
+        String result = StoreRepository.updateStore(selectedStore);
+
+        // Affichage du résultat de l'opération
+        if (result.equals("Store Updated Successfully")) {
+            System.out.println("✅ Store updated successfully!");
+        } else {
+            System.out.println("❌ Error: " + result);
+        }
+
+
+
+
     }
 }

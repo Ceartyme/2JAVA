@@ -58,6 +58,29 @@ public class StoreRepository {
         }
     }
 
+    public static Response<Store> getStoreById(int idStore) {
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM IStore.Stores WHERE IdStore = ?");
+            pstmt.setInt(1, idStore);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (!rs.next()) {
+                return new Response<>("No store found with the given ID.");
+            }
+
+            Store store = new Store(rs.getInt("IdStore"), rs.getString("Name"));
+            return new Response<>(store);
+
+        } catch (SQLException e) {
+            return new Response<>("SQL ERROR: " + e.getMessage());
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+
     public static Response<Store> createStore(String name){
         Connection conn = null;
         try{

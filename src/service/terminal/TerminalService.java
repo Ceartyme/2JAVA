@@ -106,33 +106,41 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerStores();
-            int choice = InputService.intInput(1, 9, scanner);
+            int choice = InputService.intInput(1, 12, scanner);
             switch (choice) {
                 case 1:
                     StoreService.createStoreController(scanner);
                     break;
                 case 2:
-                    StoreService.addEmployeesController(scanner);
+                    StoreService.updateStoreController(scanner); //A faire
                     break;
                 case 3:
-                    ItemService.createItemController(scanner);
+                    StoreService.addEmployeesController(scanner);
                     break;
                 case 4:
-                    InventoryService.createItemsToStoreController(scanner);
+                    ItemService.createItemController(scanner);
                     break;
                 case 5:
-                    StoreService.displayWorkersController(scanner);
+                    ItemService.updateItemController(scanner); // A faire
                     break;
                 case 6:
-                    InventoryService.deleteItemsFromStoreController(scanner);
+                    InventoryService.createItemsToStoreController(scanner);
                     break;
                 case 7:
-                    ItemService.deleteItemController(scanner);
+                    StoreService.displayWorkersController(scanner);
                     break;
                 case 8:
-                    StoreService.deleteStoreController(scanner);
+                    InventoryService.deleteItemsFromStoreController(scanner);
                     break;
                 case 9:
+                    ItemService.deleteItemController(scanner);
+                    break;
+                case 10:
+                    StoreService.removeEmployeesController(scanner); // A faire
+                case 11:
+                    StoreService.deleteStoreController(scanner);
+                    break;
+                case 12:
                     running = false;
                     break;
             }
