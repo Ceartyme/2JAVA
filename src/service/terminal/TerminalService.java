@@ -33,7 +33,7 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.showAdminMenu();
-            int choice = InputService.intInput(1, 4, scanner);
+            int choice = InputService.intInput(1, 3, scanner);
             switch (choice) {
                 case 1:
                     ManageUsersActions(scanner, loggedUser);
@@ -112,7 +112,7 @@ public class TerminalService {
                     StoreService.createStoreController(scanner);
                     break;
                 case 2:
-                    StoreService.updateStoreController(scanner); //A faire
+                    StoreService.updateStoreController(scanner);
                     break;
                 case 3:
                     StoreService.addEmployeesController(scanner);

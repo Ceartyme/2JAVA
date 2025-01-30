@@ -65,5 +65,68 @@ public class ItemService {
         }
     }
 
-    public static void updateItemController(Scanner scanner){}
+    public static void updateItemController(Scanner scanner){
+        System.out.println("Fetching all items...");
+
+        Response<ArrayList<Item>> allItems = ItemRepository.getAllItems();
+        if(!allItems.getMessage().equals("Success")){
+            System.out.println("Error fetching all items: " + allItems.getMessage());
+        }
+
+        ArrayList<Item> items = allItems.getValue();
+
+        if(items.isEmpty()){
+            System.out.println("No items available in the system.");
+            return;
+        }
+
+        System.out.println("Available items:");
+        for (Item item : items) {
+            System.out.println("ID: " + item.getIdItem() + " | Name: " + item.getName() + " | Price: $" + item.getPrice());
+        }
+
+        Response<ArrayList<Integer>> itemIdResponse = ItemRepository.getIdItems();
+        int itemId = InputService.idInput(scanner, itemIdResponse);
+
+        if(itemId == 0){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+
+        Response<Item> selectedItemResponse = ItemRepository.getItemById(itemId);
+
+        if (!selectedItemResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + selectedItemResponse.getMessage());
+            return;
+        }
+
+        Item selectedItem = selectedItemResponse.getValue();
+
+        scanner.nextLine();
+        System.out.println("Enter the new name for the item (or press Enter to keep current name: " + selectedItem.getName() + "):");
+        String newName = scanner.nextLine().trim();
+        if (newName.isEmpty()) {
+            newName = selectedItem.getName();
+        }
+
+        System.out.println("Enter the new price for the item (or 0 to keep current price: $" + selectedItem.getPrice() + "):");
+        double newPrice = InputService.doubleInput(0.01, scanner);
+
+        if (newPrice == 0) {
+            newPrice = selectedItem.getPrice();
+        }
+
+        selectedItem.setName(newName);
+        selectedItem.setPrice(newPrice);
+
+        String result = ItemRepository.updateItem(selectedItem);
+
+        if (result.equals("Item Updated Successfully")) {
+            System.out.println("✅ Item updated successfully!");
+        } else {
+            System.out.println("❌ Error: " + result);
+        }
+
+    }
 }

@@ -331,7 +331,7 @@ public class StoreService {
         int storeId = InputService.idInput(scanner, storeIdResponse);
 
         if (storeId == 0){
-            System.out.println("Invalid store ID. Operation cancelled.");
+            System.out.println("Operation cancelled.");
             return;
         }
 

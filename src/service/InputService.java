@@ -26,6 +26,11 @@ public class InputService{
         try {
             System.out.println("Enter a number greater than " + minimum + ": ");
             double response = input.nextDouble();
+
+            if (response == 0) {
+                return 0;
+            }
+
             if (response < minimum) {
                 System.out.println("The number is less than the minimum allowed. Please try again.");
                 return doubleInput(minimum, input);
