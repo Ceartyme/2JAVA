@@ -58,7 +58,6 @@ public class StoreRepository {
         }
     }
 
-
     public static Response<Store> createStore(String name){
         Connection conn = null;
         try{
@@ -97,7 +96,6 @@ public class StoreRepository {
 
         return new Response<>(storeIds);
     }
-
 
     public static String deleteStore(int id){
         Connection conn = null;

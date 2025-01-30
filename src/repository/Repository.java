@@ -18,8 +18,6 @@ public class Repository {
     private final static String USER = dotenv.get("DB_USER");
     private final static String password = dotenv.get("DB_PASSWORD");
 
-    private Repository() {
-    }
 
     public static Connection getConnection(){
         Connection conn = null;

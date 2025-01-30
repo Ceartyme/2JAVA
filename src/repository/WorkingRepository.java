@@ -43,9 +43,6 @@ public class WorkingRepository {
         }
     }
 
-
-
-
     public static String fire(int idStore, int idUser){
         Connection conn = null;
         try{

@@ -86,11 +86,6 @@ public class UserRepository {
         }
     }
 
-
-
-
-
-
     public static Response<ArrayList<User>> getAllEmployees(){
         Connection conn = null;
 
@@ -113,7 +108,6 @@ public class UserRepository {
             Repository.closeConnection(conn);
         }
     }
-
 
     public static Response<ArrayList<User>> getAllAdmin(){
         Connection conn = null;
@@ -184,7 +178,6 @@ public class UserRepository {
         }
     }
 
-
     public static Response<User> updateUser(User updatedUser) {
         Connection conn = null;
 
@@ -226,7 +219,6 @@ public class UserRepository {
             Repository.closeConnection(conn);
         }
     }
-
 
     public static Response<ArrayList<Integer>> getIdUser() {
         Connection conn = null;
