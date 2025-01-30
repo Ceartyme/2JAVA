@@ -264,6 +264,7 @@ public class InventoryService {
 
         System.out.println("Items available in the store:");
         ArrayList<Integer> ListIds = new ArrayList<>();
+
         for (Inventory inventory : stockList) {
             Response<Item> itemResponse = ItemRepository.getItemById(inventory.getIdItem());
             if (!itemResponse.getMessage().equals("Success")) {
@@ -279,15 +280,27 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
         int itemId = InputService.idInput(scanner, itemIdResponse);
+
+
+
         boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
         if (!itemExists) {
             System.out.println("Invalid item ID. Operation cancelled.");
             return;
         }
 
+        Inventory selectedInventory = stockList.stream()
+                .filter(inventory -> inventory.getIdItem() == itemId)
+                .findFirst()
+                .orElse(null);
+
+
+        int currentAmount = selectedInventory.getAmount();
+
         System.out.println("Enter the quantity to decrease (positive integer):");
         int decreaseAmount = InputService.intInput(1, Integer.MAX_VALUE, scanner);
-        if ((itemId-decreaseAmount) > 0){
+
+        if ((currentAmount-decreaseAmount) < 0){
             System.out.println("The item has no stock left to decrease.");
             return;
         }
