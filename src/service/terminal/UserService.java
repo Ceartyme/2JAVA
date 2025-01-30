@@ -23,7 +23,7 @@ public class UserService {
                 System.out.println("Logged in. Welcome " + userLogged.getUsername());
                 switch (userLogged.getRole()) {
                     case ADMIN:
-                        TerminalService.adminActions(scanner);
+                        TerminalService.adminActions(scanner, userLogged);
                         break;
                     case EMPLOYEE:
                         TerminalService.EmployeeActions(scanner, userLogged);
@@ -301,7 +301,7 @@ public class UserService {
         }
     }
 
-    public static void deleteControllerAdmin(Scanner scanner) {
+    public static void deleteControllerAdmin(Scanner scanner, User loggedUser) {
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
@@ -330,6 +330,12 @@ public class UserService {
             System.out.println("The user has been successfully deleted.");
         } else {
             System.out.println("Error Message: " + responseDelete);
+        }
+
+        if (loggedUser.getIdUser() == userToDelete.getIdUser()) {
+            loggedUser = null;
+            System.out.println("Logout !");
+            TerminalService.start();
         }
     }
 }

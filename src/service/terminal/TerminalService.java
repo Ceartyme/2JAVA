@@ -29,14 +29,14 @@ public class TerminalService {
         }
     }
 
-    public static void adminActions(Scanner scanner) {
+    public static void adminActions(Scanner scanner, User loggedUser) {
         boolean running = true;
         while (running) {
             TerminalInterface.showAdminMenu();
             int choice = InputService.intInput(1, 4, scanner);
             switch (choice) {
                 case 1:
-                    ManageUsersActions(scanner);
+                    ManageUsersActions(scanner, loggedUser);
                     break;
                 case 2:
                     ManageStoresActions(scanner);
@@ -77,7 +77,7 @@ public class TerminalService {
         }
     }
 
-    public static void ManageUsersActions(Scanner scanner) {
+    public static void ManageUsersActions(Scanner scanner, User loggedUser) {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerUsers();
@@ -93,7 +93,7 @@ public class TerminalService {
                     EmailService.removeWhitelistEmailController(scanner);
                     break;
                 case 4:
-                    UserService.deleteControllerAdmin(scanner);
+                    UserService.deleteControllerAdmin(scanner, loggedUser);
                     break;
                 case 5:
                     running = false;
@@ -159,6 +159,8 @@ public class TerminalService {
                     break;
                 case 5:
                     UserService.deleteController(scanner, loggedUser);
+                    System.out.println("Logout !");
+                    running = false;
                     break;
                 case 6:
                     System.out.println("Logout !");
