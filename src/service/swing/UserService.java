@@ -9,8 +9,8 @@ import service.InputService;
 import java.util.Objects;
 
 public class UserService{
-    public static User login(String email,String password) throws Exception {
-        if(email.isEmpty()||password.isEmpty()){
+    protected static User login(String email,String password) throws Exception {
+        if(email.isEmpty()||password.isEmpty()||Objects.equals(email,"example@example.com")){
             throw new Exception("Every field must be filled");
         }
         if(!InputService.isEmailValid(email)){
@@ -27,8 +27,8 @@ public class UserService{
         }
     }
 
-    public static User register(String username, String email, String password) throws Exception{
-        if(email.isEmpty()||password.isEmpty()||username.isEmpty()){
+    protected static User register(String username, String email, String password) throws Exception{
+        if(email.isEmpty()||password.isEmpty()||username.isEmpty()||Objects.equals(email,"example@example.com")){
             throw new Exception("Every field must be filled");
         }
         if(!InputService.isEmailValid(email)){
@@ -56,6 +56,33 @@ public class UserService{
         else {
             throw new Exception("Problem connecting to the database");
         }
+    }
+
+    protected static User update(String username, String email, String password, User user) throws Exception{
+        if(!password.isEmpty()){
+            user.setPassword(password);
+        }
+        Response<Boolean> response = UserRepository.isUsernameExisting(username);
+        checkResponse(response);
+        if(response.getValue()){
+            throw new Exception("You cannot use that username, it is already used");
+        }else {
+            user.setUsername(username);
+        }
+        response = UserRepository.isEmailExisting(email);
+        checkResponse(response);
+        if(response.getValue()){
+            throw new Exception("There is already an account linked to that email");
+        }else {
+            user.setEmail(email);
+        }
+        Response<User> responseUser = UserRepository.updateUser(user);
+        checkResponse(responseUser);
+        return user;
+    }
+
+    protected static void deleteUser(User user){
+        UserRepository.deleteUser(user.getIdUser());
     }
 
     private static void checkResponse(Response response) throws Exception{
