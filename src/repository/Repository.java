@@ -19,6 +19,18 @@ public class Repository {
     private final static String password = dotenv.get("DB_PASSWORD");
 
 
+    public static void testConnection() throws Exception{
+        Connection conn = null;
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, USER, password);
+        } catch (ClassNotFoundException ex){
+            throw new Exception("Can't load Driver. \nVerify that you have imported the mysql connector library to your project ");
+        } catch (SQLException e) {
+            throw new Exception("Can't connect to database. \nVerify that your docker container is On and that your datasource is configured well");
+        }
+    }
+
     public static Connection getConnection(){
         Connection conn = null;
         try {
