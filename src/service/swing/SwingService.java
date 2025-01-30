@@ -25,6 +25,7 @@ public class SwingService extends JFrame {
         JButton loginButton = new JButton("Log In");
         loginButton.addActionListener(e -> this.loginDisplay());
         JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(e -> this.registerDisplay());
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
 
@@ -48,7 +49,6 @@ public class SwingService extends JFrame {
     private void loginDisplay(){
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
 
         JPanel emailPanel = new JPanel();
         emailPanel.setMaximumSize(this.subPanelSize);
@@ -98,6 +98,75 @@ public class SwingService extends JFrame {
     private void login(String email, String password){
         try{
             this.user=UserService.login(email, password);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
+    private void registerDisplay(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JPanel usernamePanel = new JPanel();
+        usernamePanel.setMaximumSize(this.subPanelSize);
+        usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.Y_AXIS));
+
+        JLabel usernameLabel = new JLabel("Username : ");
+        JTextField usernameTextField = new JTextField();
+        emptyListener(usernameTextField);
+        usernamePanel.add(usernameLabel);
+        usernamePanel.add(usernameTextField);
+
+        JPanel emailPanel = new JPanel();
+        emailPanel.setMaximumSize(this.subPanelSize);
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.Y_AXIS));
+
+        JLabel emailLabel = new JLabel("Email : ");
+        JTextField emailTextField = new JTextField();
+        setPlaceholder(emailTextField,"example@example.com");
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailTextField);
+
+        JPanel passwordPanel = new JPanel();
+        passwordPanel.setMaximumSize(this.subPanelSize);
+        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
+
+        JLabel passwordLabel = new JLabel("Password : ");
+        JTextField passwordTextField = new JTextField();
+        emptyListener(passwordTextField);
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordTextField);
+
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(e -> this.register(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText()));
+        JButton backButton = new JButton("<- Back");
+        backButton.addActionListener(e -> this.startPanel());
+
+        usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalGlue());
+        panel.add(usernamePanel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(emailPanel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(passwordPanel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(registerButton);
+        panel.add(Box.createVerticalStrut(50));
+        panel.add(backButton);
+        panel.add(Box.createVerticalGlue());
+
+        this.setContentPane(panel);
+        this.setVisible(true);
+    }
+
+    private void register(String username, String email, String password){
+        try{
+            this.user=UserService.register(username,email, password);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
