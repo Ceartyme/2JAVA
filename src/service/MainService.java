@@ -10,7 +10,6 @@ import java.util.Scanner;
 
 public class MainService {
     public static void start() {
-
         try {
             Repository.testConnection();
         }catch (Exception e){

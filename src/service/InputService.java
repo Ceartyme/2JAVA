@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 public class InputService{
     public static int intInput(int minimum, int maximum, Scanner input){
-
         try {
             System.out.println("Enter an number between "+minimum+" and "+maximum+" : ");
             int response = input.nextInt();
@@ -39,10 +38,6 @@ public class InputService{
         }
     }
 
-
-
-
-
     public static String emailInput(Scanner input){
         System.out.println("Enter email address : ");
         String email=input.next();
@@ -64,25 +59,19 @@ public class InputService{
             System.out.println("Error: No valid IDs available.");
             return -1;
         }
-
         ArrayList<Integer> validIds = response.getValue();
         int input;
-
         while (true) {
             System.out.print("Enter a valid ID (or 0 to cancel): ");
-
             if (!scanner.hasNextInt()) {
                 System.out.println("Invalid input. Please enter a numeric ID.");
                 scanner.next();
                 continue;
             }
-
             input = scanner.nextInt();
-
             if (input == 0) {
                 return 0;
             }
-
             if (validIds.contains(input)) {
                 return input;
             } else {
@@ -90,5 +79,4 @@ public class InputService{
             }
         }
     }
-
 }

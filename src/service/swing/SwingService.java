@@ -103,7 +103,6 @@ public class SwingService extends JFrame {
         }
     }
 
-
     //listeners methods
     private static void setPlaceholder(JTextField textField, String placeholder) {
         textField.setText(placeholder);

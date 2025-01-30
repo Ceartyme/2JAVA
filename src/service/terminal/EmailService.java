@@ -19,7 +19,6 @@ public class EmailService {
         }
 
         String result = EmailRepository.whitelistEmail(email);
-
         if (result.equals("Email whitelisted Successfully")) {
             System.out.println("The email address has been successfully whitelisted.");
         } else {
@@ -31,16 +30,13 @@ public class EmailService {
         scanner.nextLine();
         System.out.println("Fetching all whitelisted emails...");
 
-
         Response<ArrayList<String>> allEmailsResponse = EmailRepository.getAllEmails();
-
         if (!allEmailsResponse.getMessage().equals("Success")) {
             System.out.println("Error fetching emails: " + allEmailsResponse.getMessage());
             return;
         }
 
         ArrayList<String> emails = allEmailsResponse.getValue();
-
         if (emails.isEmpty()) {
             System.out.println("No whitelisted emails available.");
             return;
@@ -53,16 +49,12 @@ public class EmailService {
 
         System.out.println("Enter the ID of the email you want to remove:");
         int emailId = InputService.intInput(1, emails.size(), scanner);
-
         String selectedEmail = emails.get(emailId - 1);
-
         String result = EmailRepository.removeEmail(selectedEmail);
-
         if (result.equals("Mail address removed Successfully")) {
             System.out.println("The email address has been successfully removed from the whitelist.");
         } else {
             System.out.println("Error while removing the email: " + result);
         }
     }
-
 }

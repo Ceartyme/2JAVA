@@ -67,8 +67,6 @@ public class TerminalInterface {
         System.out.println("╚═══════════════════════════════════════════╝");
     }
 
-
-
     public static void showUserMenu() {
         System.out.println("╔═══════════════════════════════════════════╗");
         System.out.println("║               User Options                ║");
@@ -110,6 +108,4 @@ public class TerminalInterface {
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");
     }
-
-
 }

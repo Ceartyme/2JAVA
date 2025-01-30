@@ -7,19 +7,13 @@ import ui.TerminalInterface;
 import java.util.Scanner;
 
 public class TerminalService {
-
-
-
     public static void start() {
         Scanner scanner = new Scanner(System.in);
         User loggedUser = null;
         boolean running = true;
-
         while (running) {
             TerminalInterface.showMainMenu();
             int choice = InputService.intInput(1, 3, scanner);
-
-
             switch (choice) {
                 case 1:
                     UserService.loginController(scanner);
@@ -35,16 +29,11 @@ public class TerminalService {
         }
     }
 
-
-
     public static void adminActions(Scanner scanner) {
-
         boolean running = true;
-
         while (running) {
             TerminalInterface.showAdminMenu();
             int choice = InputService.intInput(1, 4, scanner);
-
             switch (choice) {
                 case 1:
                     ManageUsersActions(scanner);
@@ -58,18 +47,13 @@ public class TerminalService {
                     break;
             }
         }
-
-
-
     }
-
 
     public static void userActions(Scanner scanner, User loggedUser) {
         boolean running = true;
         while(running) {
             TerminalInterface.showUserMenu();
             int choice = InputService.intInput(1, 5, scanner);
-
             switch (choice) {
                 case 1:
                     StoreService.BrowseInventory(scanner);
@@ -88,9 +72,7 @@ public class TerminalService {
                     break;
             }
         }
-
     }
-
 
     public static void ManageUsersActions(Scanner scanner) {
         boolean running = true;
@@ -159,7 +141,6 @@ public class TerminalService {
         while (running) {
             TerminalInterface.showEmployeeMenu();
             int choice = InputService.intInput(1, 6, scanner);
-
             switch (choice) {
                 case 1:
                     TerminalService.manageMyStore(scanner, loggedUser);
@@ -180,7 +161,6 @@ public class TerminalService {
                     System.out.println("Logout !");
                     running = false;
                     break;
-
             }
         }
     }
@@ -190,7 +170,6 @@ public class TerminalService {
         while (running) {
             TerminalInterface.manageMyStoreMenu();
             int choice = InputService.intInput(1, 4, scanner);
-
             switch (choice) {
                 case 1:
                     StoreService.displayWorkersEmployeesController(loggedUser.getIdUser(), scanner);
@@ -204,10 +183,7 @@ public class TerminalService {
                 case 4:
                     running = false;
                     break;
-
             }
         }
     }
-
-
 }

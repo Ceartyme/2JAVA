@@ -12,22 +12,15 @@ import java.util.Scanner;
 public class UserService {
     public static void loginController(Scanner scanner) {
         scanner.nextLine();
-
         String email = InputService.emailInput(scanner);
         scanner.nextLine();
-
         System.out.println("Enter password: ");
         String password = scanner.nextLine();
-
-
-
         Response<User> response = UserRepository.login(email, password);
-
         if (response.getMessage().equals("Success")){
             User userLogged = response.getValue();
             if (userLogged != null) {
                 System.out.println("Logged in. Welcome " + userLogged.getUsername());
-
                 switch (userLogged.getRole()) {
                     case ADMIN:
                         TerminalService.adminActions(scanner);
@@ -37,31 +30,23 @@ public class UserService {
                         break;
                     case USER:
                         TerminalService.userActions(scanner, userLogged);
-
                         break;
-
                 }
-
             }else{
                 System.out.println("Login failed.");
             }
         }else{
             System.out.println("Error Message :" + response.getMessage());
         }
-
-
-
     }
 
     public static void registerController(Scanner scanner) {
         scanner.nextLine();
         String username;
         String email;
-
         while(true){
             System.out.print("Enter Username: ");
             username = scanner.nextLine();
-
             Response<Boolean> response = UserRepository.isUsernameExisting(username);
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This username is already taken. Please choose another.");
@@ -74,17 +59,14 @@ public class UserService {
         }
 
         while(true){
-
             email = InputService.emailInput(scanner);
             Response<Boolean> response = UserRepository.isEmailExisting(email);
-
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This email is already taken. Please choose another.");
             }else if(!response.getMessage().equals("Success")){
                 System.out.println("Error Message :" + response.getMessage());
             } else{
                 Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(email);
-
                 if(!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()){
                     if (!whitelistResponse.getMessage().equals("Success")){
                         System.out.println("Error Message :" + whitelistResponse.getMessage());
@@ -92,19 +74,15 @@ public class UserService {
                         System.out.println("Registration failed. Email is not whitelisted.");
                         return;
                     }
-
                 }else{
                     break;
                 }
             }
         }
-
         scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-
         Response<User> response = UserRepository.createUser(username, email, password, 3);
-
         if (response.getMessage().equals("Success")){
             User newUser = response.getValue();
             if (newUser != null){
@@ -115,7 +93,6 @@ public class UserService {
         }else{
             System.out.println("Error Message :" + response.getMessage());
         }
-
     }
 
     public static void updateControllerUser(Scanner scanner, User loggedUser) {
@@ -140,33 +117,26 @@ public class UserService {
                     loggedUser.setUsername(newUsername);
                     break;
                 }
-
             }
         }
 
         while (true){
             System.out.println("Enter new Email ( or press enter to keep current) :");
             String newEmail = scanner.nextLine().trim();
-
             if (newEmail.isEmpty()){
                 newEmail = loggedUser.getEmail();
                 break;
             }
-
             if (!InputService.isEmailValid(newEmail)){
                 System.out.println("Email is not valid. Please try again.");
             } else{
-
-
                 Response<Boolean> response = UserRepository.isEmailExisting(newEmail);
-
                 if (response.getMessage().equals("Success") && response.getValue()) {
                     System.out.println("This email is already taken. Please choose another.");
                 }else if(!response.getMessage().equals("Success")){
                     System.out.println("Error Message :" + response.getMessage());
                 } else {
                     Response<Boolean> whitelistResponse = EmailRepository.isEmailWhitelisted(newEmail);
-
                     if (!whitelistResponse.getMessage().equals("Success") || !whitelistResponse.getValue()) {
                         if (!whitelistResponse.getMessage().equals("Success")) {
                             System.out.println("Error Message :" + whitelistResponse.getMessage());
@@ -174,13 +144,11 @@ public class UserService {
                             System.out.println("Registration failed. Email is not whitelisted.");
                             return;
                         }
-
                     } else {
                         break;
                     }
                 }
             }
-
         }
 
         System.out.println("Enter new Password (or press enter to keep current) :");
@@ -191,9 +159,7 @@ public class UserService {
             loggedUser.setPassword(newPassword);
         }
 
-
         Response<User> updateResponse = UserRepository.updateUser(loggedUser);
-
         if (updateResponse.getMessage().equals("Success")){
             System.out.println("Profil updated successfully.");
         }else{
@@ -204,14 +170,9 @@ public class UserService {
     public static void updateControllerAdmin(Scanner scanner) {
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
-
-
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
-
         int idUser = InputService.idInput(scanner, userIdResponse);
-
         Response<User> response = UserRepository.getUserById(idUser);
-
         if (!response.getMessage().equals("Success")){
             System.out.println("Error Message :" + response.getMessage());
         }
@@ -241,14 +202,12 @@ public class UserService {
                     userToUpdate.setUsername(newUsername);
                     break;
                 }
-
             }
         }
 
         while (true){
             System.out.println("Enter new Email ( or press enter to keep current) :");
             String newEmail = scanner.nextLine().trim();
-
             if (newEmail.isEmpty()){
                 newEmail = userToUpdate.getEmail();
                 break;
@@ -257,10 +216,7 @@ public class UserService {
             if (!InputService.isEmailValid(newEmail)){
                 System.out.println("Email is not valid. Please try again.");
             } else {
-
-
                 Response<Boolean> CheckEmailResponse = UserRepository.isEmailExisting(newEmail);
-
                 if (response.getMessage().equals("Success") && CheckEmailResponse.getValue()) {
                     System.out.println("This email is already taken. Please choose another.");
                 } else if (!CheckEmailResponse.getMessage().equals("Success")) {
@@ -282,8 +238,6 @@ public class UserService {
                 }
             }
         }
-
-
 
         System.out.println("Enter new password (or press Enter to keep current):");
         String newPassword = scanner.nextLine().trim();
@@ -308,24 +262,18 @@ public class UserService {
         } else {
             System.out.println("Error updating user: " + updateResponse.getMessage());
         }
-
     }
-
-
 
     public static void readInfoUsers(Scanner scanner) {
         Response<ArrayList<User>> response = UserRepository.getAllUsers();
-
         if (!response.getMessage().equals("Success")){
             System.out.println("Error : " + response.getMessage());
         }
 
         ArrayList<User> users = response.getValue();
-
         System.out.println("Users information:");
         System.out.println("ID | Username | Email | Role");
         System.out.println("-----------------------------");
-
         for (User user : users) {
             System.out.printf("%d | %s | %s | %s%n",
                     user.getIdUser(),
@@ -337,17 +285,14 @@ public class UserService {
     }
 
     public static void deleteController(Scanner scanner, User loggedUser) {
-
         System.out.println("Are you sure you want to delete the user? (yes/no)");
         String answer = scanner.nextLine();
-
         if (answer.equals("no")){
             System.out.println("Operation cancelled.");
             return;
         }
 
         String response = UserRepository.deleteUser(loggedUser.getIdUser());
-
         if (response.equals("User Deleted Successfully")){
             System.out.println("The user has been successfully deleted.");
         }else{
@@ -358,20 +303,15 @@ public class UserService {
     public static void deleteControllerAdmin(Scanner scanner) {
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
-
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
-
         int idUser = InputService.idInput(scanner, userIdResponse);
-
         Response<User> response = UserRepository.getUserById(idUser);
-
         if(!response.getMessage().equals("Success")){
             System.out.println("Error Message :" + response.getMessage());
             return;
         }
 
         User userToDelete = response.getValue();
-
         if(userToDelete == null){
             System.out.println("User does not exist. Please choose another.");
         }
@@ -379,24 +319,16 @@ public class UserService {
         scanner.nextLine();
         System.out.println("Are you sure you want to delete the user? (yes/no)");
         String answer = scanner.nextLine();
-
         if (answer.equals("no")){
             System.out.println("Operation cancelled.");
             return;
         }
 
         String responseDelete = UserRepository.deleteUser(idUser);
-
         if (responseDelete.equals("User Deleted Successfully")) {
             System.out.println("The user has been successfully deleted.");
         } else {
             System.out.println("Error Message: " + responseDelete);
         }
-
     }
-
-
-
-
-
 }

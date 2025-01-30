@@ -5,7 +5,6 @@ import model.User;
 import repository.UserRepository;
 import service.InputService;
 
-import javax.swing.*;
 import java.util.Objects;
 
 public class UserService{
