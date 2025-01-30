@@ -104,7 +104,7 @@ public class StoreService {
         }
 
         System.out.println("Fetching all users...");
-        Response<ArrayList<User>> userResponse = UserRepository.getAllUsers();
+        Response<ArrayList<User>> userResponse = UserRepository.getAllEmployeesAndUsers();
         if (!userResponse.getMessage().equals("Success")) {
             System.out.println("Error: " + userResponse.getMessage());
             return;
@@ -146,7 +146,88 @@ public class StoreService {
         }
     }
 
-    public static void removeEmployeesController(Scanner scanner){}
+    public static void removeEmployeesController(Scanner scanner){
+        scanner.nextLine();
+
+        System.out.println("Fetching all stores...");
+
+        Response<ArrayList<Store>> storeResponse = StoreRepository.getAllStores();
+        if(!storeResponse.getMessage().equals("Success")){
+            System.out.println("Error : " + storeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeResponse.getValue();
+        if (stores.isEmpty()) {
+            System.out.println("No stores available.");
+            return;
+        }
+
+        System.out.println("Available stores:");
+        for (Store store : stores) {
+            System.out.printf("ID: %d | Name: %s%n", store.getIdStore(), store.getName());
+        }
+
+        Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+        int storeId = InputService.idInput(scanner, storeIdResponse);
+        boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
+        if (!storeExists) {
+            System.out.println("Invalid store ID. Operation cancelled.");
+            return;
+        }
+
+        System.out.println("Fetching employees assigned to the store...");
+        Response<ArrayList<User>> employeeResponse = WorkingRepository.getEmployeesFromStore(storeId);
+        if (!employeeResponse.getMessage().equals("Success")) {
+            System.out.println("Error: " + employeeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<User> employees = employeeResponse.getValue();
+        if (employees.isEmpty()) {
+            System.out.println("No employees found in this store.");
+            return;
+        }
+
+        System.out.println("Employees in store:");
+        ArrayList<Integer> employeesIds = new ArrayList<>();
+        for (User user : employees) {
+            employeesIds.add(user.getIdUser());
+            System.out.printf("ID: %d | Username: %s | Role: %s%n",
+                    user.getIdUser(),
+                    user.getUsername(),
+                    user.getRole());
+        }
+
+        Response<ArrayList<Integer>> employeeIdResponse = new Response<>(employeesIds);
+        int userId = InputService.idInput(scanner, employeeIdResponse);
+
+
+        boolean userExists = employees.stream().anyMatch(user -> user.getIdUser() == userId);
+        if (!userExists) {
+            System.out.println("Invalid employee ID. Operation cancelled.");
+            return;
+        }
+
+        String fireResult = WorkingRepository.fire(storeId, userId);
+        if (fireResult.equals("Employee fired Successfully")) {
+            System.out.println("The employee has been successfully removed from the store.");
+
+            Response<ArrayList<Store>> userStoresResponse = StoreRepository.getStoresByEmployeeId(userId);
+            if (userStoresResponse.getMessage().equals("Success") && userStoresResponse.getValue().isEmpty()) {
+                String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 3);
+                if (updateRoleResult.equals("User role updated successfully")) {
+                    System.out.println("The user's role has been updated to USER.");
+                    return;
+                } else {
+                    System.out.println("Error updating user's role: " + updateRoleResult);
+                    return;
+                }
+            }
+        } else {
+            System.out.println("Error removing employee: " + fireResult);
+        }
+    }
 
     public static void displayWorkersController(Scanner scanner) {
         System.out.println("Fetching all stores...");

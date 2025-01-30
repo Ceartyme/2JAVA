@@ -121,7 +121,7 @@ public class TerminalService {
                     ItemService.createItemController(scanner);
                     break;
                 case 5:
-                    ItemService.updateItemController(scanner); // A faire
+                    ItemService.updateItemController(scanner);
                     break;
                 case 6:
                     InventoryService.createItemsToStoreController(scanner);

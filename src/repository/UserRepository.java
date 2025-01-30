@@ -86,14 +86,14 @@ public class UserRepository {
         }
     }
 
-    public static Response<ArrayList<User>> getAllEmployees(){
+    public static Response<ArrayList<User>> getAllEmployeesAndUsers(){
         Connection conn = null;
 
         ArrayList<User> users = new ArrayList<>();
         try {
             conn = Repository.getConnection();
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdRole=2;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Users WHERE IdRole!=1;");
             if(!rs.next()){
                 return new Response<>("Error not any employees in database");
             }
