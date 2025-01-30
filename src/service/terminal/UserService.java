@@ -285,6 +285,7 @@ public class UserService {
     }
 
     public static void deleteController(Scanner scanner, User loggedUser) {
+        scanner.nextLine();
         System.out.println("Are you sure you want to delete the user? (yes/no)");
         String answer = scanner.nextLine();
         if (answer.equals("no")){
