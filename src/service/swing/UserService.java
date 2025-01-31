@@ -64,14 +64,14 @@ public class UserService{
         }
         Response<Boolean> response = UserRepository.isUsernameExisting(username);
         checkResponse(response);
-        if(response.getValue()){
+        if(response.getValue() && !Objects.equals(username,user.getUsername())){
             throw new Exception("You cannot use that username, it is already used");
         }else {
             user.setUsername(username);
         }
         response = UserRepository.isEmailExisting(email);
         checkResponse(response);
-        if(response.getValue()){
+        if(response.getValue() && !Objects.equals(email,user.getEmail())){
             throw new Exception("There is already an account linked to that email");
         }else {
             user.setEmail(email);
