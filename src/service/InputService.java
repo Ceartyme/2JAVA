@@ -48,7 +48,7 @@ public class InputService{
         String email=input.next();
         if (!isEmailValid(email)){
             input.nextLine();
-            System.out.println("Invalid email address");
+            System.out.println("Invalid email address format.");
             return emailInput(input);
         }
         return email;

@@ -109,6 +109,7 @@ public class TerminalService {
             int choice = InputService.intInput(1, 12, scanner);
             switch (choice) {
                 case 1:
+                    scanner.nextLine();
                     StoreService.createStoreController(scanner);
                     break;
                 case 2:
@@ -136,7 +137,8 @@ public class TerminalService {
                     ItemService.deleteItemController(scanner);
                     break;
                 case 10:
-                    StoreService.removeEmployeesController(scanner); // A faire
+                    StoreService.removeEmployeesController(scanner);
+                    break;
                 case 11:
                     StoreService.deleteStoreController(scanner);
                     break;

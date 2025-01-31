@@ -88,7 +88,7 @@ public class TerminalInterface {
         System.out.println("╔═══════════════════════════════════════════╗");
         System.out.println("║             Employee Options              ║");
         System.out.println("║                                           ║");
-        System.out.println("║          1. Manager my store              ║");
+        System.out.println("║          1. Manage my store               ║");
         System.out.println("║          2. Browse Inventory              ║");
         System.out.println("║          3. Read information about        ║");
         System.out.println("║             users                         ║");

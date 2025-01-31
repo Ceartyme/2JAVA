@@ -1,9 +1,9 @@
 package service.terminal;
 
 import model.Response;
+import model.Role;
 import model.User;
-import repository.EmailRepository;
-import repository.UserRepository;
+import repository.*;
 import service.InputService;
 
 import java.util.ArrayList;
@@ -257,6 +257,7 @@ public class UserService {
         if (!newRole.isEmpty()) {
             try {
                 int roleId = Integer.parseInt(newRole);
+
                 userToUpdate.setRole(roleId);
         } catch (NumberFormatException e) {
                 System.out.println("Invalid role ID. No changes made to the role.");
@@ -267,6 +268,14 @@ public class UserService {
         Response<User> updateResponse = UserRepository.updateUser(userToUpdate);
         if (updateResponse.getMessage().equals("Success")) {
             System.out.println("User updated successfully.");
+
+
+
+            if (userToUpdate.getRole() == Role.EMPLOYEE){
+                System.out.println("This user become an Employee, you can attribute him to a store...");
+                StoreService.addUpdatedUserEmployeesController(scanner, userToUpdate.getIdUser());
+
+            }
 
 
             if (userToUpdate.getIdUser() == loggedUser.getIdUser()){
