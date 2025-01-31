@@ -167,7 +167,7 @@ public class UserService {
         }
     }
 
-    public static void updateControllerAdmin(Scanner scanner) {
+    public static void updateControllerAdmin(Scanner scanner, User loggedUser) {
 
         System.out.println("Fetching all users...");
         readInfoUsers(scanner);
@@ -258,17 +258,39 @@ public class UserService {
             try {
                 int roleId = Integer.parseInt(newRole);
                 userToUpdate.setRole(roleId);
-            } catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
                 System.out.println("Invalid role ID. No changes made to the role.");
             }
         }
 
+
         Response<User> updateResponse = UserRepository.updateUser(userToUpdate);
         if (updateResponse.getMessage().equals("Success")) {
             System.out.println("User updated successfully.");
+
+
+            if (userToUpdate.getIdUser() == loggedUser.getIdUser()){
+                System.out.println("Redirecting Admin to the appropriate menu...");
+                switch (userToUpdate.getRole()) {
+                    case ADMIN:
+                        TerminalService.adminActions(scanner, userToUpdate);
+                        System.exit(0);
+                    case EMPLOYEE:
+                        TerminalService.EmployeeActions(scanner, userToUpdate);
+                        System.exit(0);
+                    case USER:
+                        TerminalService.userActions(scanner, userToUpdate);
+                        System.exit(0);
+                }
+            }
+
+
+
         } else {
             System.out.println("Error updating user: " + updateResponse.getMessage());
         }
+
+
     }
 
     public static void readInfoUsers(Scanner scanner) {

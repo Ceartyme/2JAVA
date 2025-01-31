@@ -84,7 +84,7 @@ public class TerminalService {
             int choice = InputService.intInput(1, 5, scanner);
             switch (choice) {
                 case 1:
-                    UserService.updateControllerAdmin(scanner);
+                    UserService.updateControllerAdmin(scanner, loggedUser);
                     break;
                 case 2:
                     EmailService.addWhitelistEmailController(scanner);
