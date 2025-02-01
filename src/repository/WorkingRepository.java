@@ -83,4 +83,27 @@ public class WorkingRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static String removeStoresFromUser(int userId) {
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+
+
+            String query = "DELETE FROM IStore.WORKING WHERE  IdUser = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, userId);
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                return "All stores have been successfully removed from the user.";
+            } else {
+                return "No stores were found for this user.";
+            }
+        } catch (SQLException e) {
+            return "SQL ERROR: " + e.getMessage();
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }

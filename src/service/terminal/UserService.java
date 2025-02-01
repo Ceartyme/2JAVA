@@ -264,6 +264,7 @@ public class UserService {
         }
 
         System.out.println("Enter new role (1 = ADMIN, 2 = EMPLOYEE, 3 = USER) (or press Enter to keep current):");
+        Role RoleUser = userToUpdate.getRole();
         String newRole = scanner.nextLine().trim();
         if (!newRole.isEmpty()) {
             try {
@@ -287,6 +288,31 @@ public class UserService {
                 StoreService.addUpdatedUserEmployeesController(scanner, userToUpdate.getIdUser());
 
             }
+
+            if (RoleUser == Role.EMPLOYEE && userToUpdate.getRole() == Role.USER || RoleUser == Role.EMPLOYEE && userToUpdate.getRole() == Role.ADMIN){
+                System.out.println("This user was an employee, you want remove him their stores ? (yes/no)");
+                String responseUser = scanner.nextLine().trim().toLowerCase();
+
+
+                if (responseUser.equals("yes")) {
+
+                    String result = WorkingRepository.removeStoresFromUser(userToUpdate.getIdUser());
+
+                    if (!result.equals("All stores have been successfully removed from the user.")){
+                        System.out.println("Error Message :" + result);
+                    }else{
+                        System.out.println("All stores have been successfully removed from the user.");
+                    }
+
+
+                } else {
+                    System.out.println("User's stores remain intact.");
+                }
+            }
+
+
+
+
 
 
             if (userToUpdate.getIdUser() == loggedUser.getIdUser()){
