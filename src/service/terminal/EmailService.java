@@ -1,7 +1,9 @@
 package service.terminal;
 
 import model.Response;
+import model.User;
 import repository.EmailRepository;
+import repository.UserRepository;
 import service.InputService;
 
 import java.util.ArrayList;
@@ -51,8 +53,37 @@ public class EmailService {
         int emailId = InputService.intInput(1, emails.size(), scanner);
         String selectedEmail = emails.get(emailId - 1);
         String result = EmailRepository.removeEmail(selectedEmail);
+
         if (result.equals("Mail address removed Successfully")) {
             System.out.println("The email address has been successfully removed from the whitelist.");
+
+            Response<User> userResponse = UserRepository.getUserByEmail(selectedEmail);
+
+            if (userResponse.getMessage().equals("Success") && userResponse.getValue() != null) {
+                User user = userResponse.getValue();
+                System.out.printf("User associated with this email: ID: %d | Username: %s | Role: %s%n",
+                        user.getIdUser(), user.getUsername(), user.getRole());
+
+                scanner.nextLine();
+                System.out.println("Do you also want to delete this user? (yes/no)");
+                String choice = scanner.nextLine().trim().toLowerCase();
+                if (choice.equals("yes")) {
+                    String deleteUserResult = UserRepository.deleteUser(user.getIdUser());
+                    if (deleteUserResult.equals("User Deleted Successfully")) {
+                        System.out.println("The user has been successfully deleted.");
+                    } else {
+                        System.out.println("Error deleting user: " + deleteUserResult);
+                    }
+                } else {
+                    System.out.println("User was not deleted.");
+                }
+
+            }else{
+                    System.out.println("No user found with this email.");
+            }
+
+
+
         } else {
             System.out.println("Error while removing the email: " + result);
         }

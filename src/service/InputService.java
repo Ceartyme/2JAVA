@@ -45,6 +45,8 @@ public class InputService{
 
     public static String emailInput(Scanner input){
         System.out.println("Enter email address : ");
+
+
         String email=input.next();
         if (!isEmailValid(email)){
             input.nextLine();
@@ -83,5 +85,15 @@ public class InputService{
                 System.out.println("Invalid ID. Please enter a valid ID");
             }
         }
+    }
+
+    public static String cancelInput(Scanner scanner) {
+        String input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("CANCEL")) {
+            System.out.println("Action cancelled. Returning to the menu...");
+            return null;
+        }
+
+        return input;
     }
 }

@@ -50,6 +50,29 @@ public class UserRepository {
         }
     }
 
+    public static Response<User> getUserByEmail(String email){
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            conn = Repository.getConnection();
+
+            String sql = "SELECT * FROM IStore.Users WHERE Email= ?;";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+            if(!rs.next()){
+                return new Response<>("No User found with that Email.");
+            }else {
+                return new Response<>(new User(rs.getInt("IdUser"),rs.getString("Email"),rs.getString("Password"),rs.getString("Username"),rs.getInt("IdRole")));
+            }
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
     public static Response<Boolean> isUsernameExisting(String username) {
         Connection conn = null;
         try {

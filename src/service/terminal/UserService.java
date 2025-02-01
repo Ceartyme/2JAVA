@@ -12,10 +12,17 @@ import java.util.Scanner;
 public class UserService {
     public static void loginController(Scanner scanner) {
         scanner.nextLine();
+
         String email = InputService.emailInput(scanner);
+
+
+
         scanner.nextLine();
         System.out.println("Enter password: ");
         String password = scanner.nextLine();
+
+
+
         Response<User> response = UserRepository.login(email, password);
         if (response.getMessage().equals("Success")){
             User userLogged = response.getValue();
@@ -41,12 +48,13 @@ public class UserService {
     }
 
     public static void registerController(Scanner scanner) {
+
         scanner.nextLine();
         String username;
         String email;
         while(true){
             System.out.print("Enter Username: ");
-            username = scanner.nextLine();
+            username = scanner.next();
             Response<Boolean> response = UserRepository.isUsernameExisting(username);
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This username is already taken. Please choose another.");
@@ -60,6 +68,9 @@ public class UserService {
 
         while(true){
             email = InputService.emailInput(scanner);
+
+
+
             Response<Boolean> response = UserRepository.isEmailExisting(email);
             if (response.getMessage().equals("Success") && response.getValue()) {
                 System.out.println("This email is already taken. Please choose another.");
@@ -81,7 +92,7 @@ public class UserService {
         }
         scanner.nextLine();
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String password = scanner.next();
         Response<User> response = UserRepository.createUser(username, email, password, 3);
         if (response.getMessage().equals("Success")){
             User newUser = response.getValue();
@@ -374,6 +385,9 @@ public class UserService {
             loggedUser = null;
             System.out.println("Logout !");
             TerminalService.start();
+            System.exit(0);
         }
     }
+
+
 }

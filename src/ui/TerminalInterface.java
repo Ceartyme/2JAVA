@@ -38,11 +38,13 @@ public class TerminalInterface {
         System.out.println("║              Admin Options                ║");
         System.out.println("║              (Manage Users)               ║");
         System.out.println("║                                           ║");
-        System.out.println("║          1. Update User                   ║");
-        System.out.println("║          2. Add whitelisted email         ║");
-        System.out.println("║          3. Remove whitelisted email      ║");
-        System.out.println("║          4. Delete User                   ║");
-        System.out.println("║          5. Back                          ║");
+        System.out.println("║          1. Create User                   ║");
+        System.out.println("║          2. Update User                   ║");
+        System.out.println("║          3. Add whitelisted email         ║");
+        System.out.println("║          4. Remove whitelisted email      ║");
+        System.out.println("║          5. Delete User                   ║");
+        System.out.println("║          6. Display all Users             ║");
+        System.out.println("║          7. Back                          ║");
         System.out.println("║                                           ║");
         System.out.println("║                                           ║");
         System.out.println("╚═══════════════════════════════════════════╝");

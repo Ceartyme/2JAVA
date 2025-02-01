@@ -81,21 +81,27 @@ public class TerminalService {
         boolean running = true;
         while (running) {
             TerminalInterface.ManagerUsers();
-            int choice = InputService.intInput(1, 5, scanner);
+            int choice = InputService.intInput(1, 7, scanner);
             switch (choice) {
                 case 1:
-                    UserService.updateControllerAdmin(scanner, loggedUser);
+                    UserService.registerController(scanner);
                     break;
                 case 2:
-                    EmailService.addWhitelistEmailController(scanner);
+                    UserService.updateControllerAdmin(scanner, loggedUser);
                     break;
                 case 3:
-                    EmailService.removeWhitelistEmailController(scanner);
+                    EmailService.addWhitelistEmailController(scanner);
                     break;
                 case 4:
-                    UserService.deleteControllerAdmin(scanner, loggedUser);
+                    EmailService.removeWhitelistEmailController(scanner);
                     break;
                 case 5:
+                    UserService.deleteControllerAdmin(scanner, loggedUser);
+                    break;
+                case 6:
+                    UserService.readInfoUsers(scanner);
+                    break;
+                case 7:
                     running = false;
                     break;
             }

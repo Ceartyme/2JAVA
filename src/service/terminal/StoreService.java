@@ -66,6 +66,22 @@ public class StoreService {
              createStoreController(scanner);
              return;
         }
+
+        Response<ArrayList<Store>> storeNameResponse = StoreRepository.getAllStores();
+        if (!storeNameResponse.getMessage().equals("Success")) {
+            System.out.println("Error fetching stores: " + storeNameResponse.getMessage());
+            return;
+        }
+
+        ArrayList<Store> stores = storeNameResponse.getValue();
+        boolean storeExists = stores.stream().anyMatch(store -> store.getName().equalsIgnoreCase(name));
+        if (storeExists) {
+            System.out.println("Error: A store with this name already exists. Please choose a different name.");
+            createStoreController(scanner);
+            return;
+        }
+
+
         Response<Store> storeResponse = StoreRepository.createStore(name);
         if (storeResponse.getMessage().equals("Success")){
             Store storeCreated = storeResponse.getValue();
@@ -273,7 +289,6 @@ public class StoreService {
             Response<ArrayList<Store>> userStoresResponse = StoreRepository.getStoresByEmployeeId(userId);
             System.out.println(userStoresResponse.getMessage());
             if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.")) {
-                System.out.println("OK2");
                 String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 3);
                 if (updateRoleResult.equals("User role updated successfully")) {
                     System.out.println("The user's role has been updated to USER.");
@@ -436,12 +451,42 @@ public class StoreService {
             return;
         }
 
+        System.out.println("Fetching employees assigned to the store...");
+        Response<ArrayList<User>> employeeResponse = WorkingRepository.getEmployeesFromStore(storeId);
+        if (!employeeResponse.getMessage().equals("Success")) {
+            System.out.println(employeeResponse.getMessage());
+            return;
+        }
+
+        ArrayList<User> employees = employeeResponse.getValue();
+
         String result = StoreRepository.deleteStore(storeId);
         if(result.equals("Store deleted Successfully")) {
             System.out.println("The store has been successfully deleted.");
+
+            for (User employee : employees) {
+                int employeeId = employee.getIdUser();
+
+                Response<ArrayList<Store>> userStoresResponse = StoreRepository.getStoresByEmployeeId(employeeId);
+                if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.")) {
+                    String updateRoleResult = WorkingRepository.updateUserRoleEmployee(employeeId, 3);
+                    if (updateRoleResult.equals("User role updated successfully")) {
+                        System.out.printf("Employee ID: %d has been demoted to USER.%n", employeeId);
+                    } else {
+                        System.out.println("Error updating user's role: " + updateRoleResult);
+                    }
+                }
+            }
+
+
+
         }else{
             System.out.println("Error: " + result);
         }
+
+
+
+
     }
 
 
