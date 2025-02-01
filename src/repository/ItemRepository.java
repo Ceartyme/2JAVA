@@ -84,6 +84,27 @@ public class ItemRepository {
         }
     }
 
+    public static Response<Item> getItemByName(String name){
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            String query = "SELECT * FROM IStore.Items WHERE Name = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, name);
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return new Response<>("No Item found with that name");
+            } else {
+                Item item = new Item(rs.getInt("IdItem"), rs.getString("Name"), rs.getDouble("Price"));
+                return new Response<>(item);
+            }
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
     public static Response<ArrayList<Inventory>> getStores(int id){
         Connection conn = null;
         ArrayList<Inventory> inventories = new ArrayList<>();

@@ -35,11 +35,12 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = Stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
+
 
         System.out.println("Fetching all items...");
         Response<ArrayList<Item>> itemsResponse = ItemRepository.getAllItems();
@@ -66,7 +67,7 @@ public class InventoryService {
             Response<ArrayList<Integer>> itemIdResponse = ItemRepository.getIdItems();
             int itemId = InputService.idInput(scanner, itemIdResponse);
             if (itemId == 0) {
-                System.out.println("Finished adding items to store.");
+                System.out.println("Operation cancelled.");
                 break;
             }
 
@@ -104,10 +105,12 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = Stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
+            return;
         }
+
 
         System.out.println("Fetching all items...");
         Response<ArrayList<Inventory>> inventoryResponse = InventoryRepository.getItemsByStore(storeId);
@@ -137,9 +140,9 @@ public class InventoryService {
 
         Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
         int itemId = InputService.idInput(scanner, itemIdResponse);
-        boolean itemExists = inventories.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
-        if (!itemExists) {
-            System.out.println("Invalid item ID. Operation cancelled.");
+
+        if (itemId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -173,9 +176,9 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!isValidStore) {
-            System.out.println("Error: Invalid store ID.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -208,11 +211,13 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
         int itemId = InputService.idInput(scanner, itemIdResponse);
-        boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
-        if (!itemExists) {
-            System.out.println("Invalid item ID. Operation cancelled.");
+
+        if (itemId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
+
+
         System.out.println("Enter the quantity to increase (positive integer):");
         int increaseAmount = InputService.intInput(1, Integer.MAX_VALUE, scanner);
         String result = InventoryRepository.increaseItemInStore(storeId, itemId, increaseAmount);
@@ -244,9 +249,9 @@ public class InventoryService {
         }
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!isValidStore) {
-            System.out.println("Error: Invalid store ID.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -281,11 +286,8 @@ public class InventoryService {
         Response<ArrayList<Integer>> itemIdResponse = new Response<>(ListIds);
         int itemId = InputService.idInput(scanner, itemIdResponse);
 
-
-
-        boolean itemExists = stockList.stream().anyMatch(inventory -> inventory.getIdItem() == itemId);
-        if (!itemExists) {
-            System.out.println("Invalid item ID. Operation cancelled.");
+        if (itemId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 

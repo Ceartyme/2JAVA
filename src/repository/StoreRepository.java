@@ -1,5 +1,6 @@
 package repository;
 
+import model.Item;
 import model.Response;
 import model.Store;
 
@@ -76,6 +77,27 @@ public class StoreRepository {
         } catch (SQLException e) {
             return new Response<>("SQL ERROR: " + e.getMessage());
         } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+    public static Response<Store> getStoreByName(String name){
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            String query = "SELECT * FROM IStore.Stores WHERE Name = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, name);
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return new Response<>("No Item found with that name");
+            } else {
+                Store store = new Store(rs.getInt("IdStore"), rs.getString("Name"));
+                return new Response<>(store);
+            }
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
             Repository.closeConnection(conn);
         }
     }

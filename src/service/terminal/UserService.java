@@ -139,7 +139,7 @@ public class UserService {
                 break;
             }
             if (!InputService.isEmailValid(newEmail)){
-                System.out.println("Email is not valid. Please try again.");
+                System.out.println("Email format is not valid. Please try again.");
             } else{
                 Response<Boolean> response = UserRepository.isEmailExisting(newEmail);
                 if (response.getMessage().equals("Success") && response.getValue()) {
@@ -152,8 +152,8 @@ public class UserService {
                         if (!whitelistResponse.getMessage().equals("Success")) {
                             System.out.println("Error Message :" + whitelistResponse.getMessage());
                         } else {
-                            System.out.println("Registration failed. Email is not whitelisted.");
-                            return;
+                            System.out.println("Updating failed. Email is not whitelisted.");
+
                         }
                     } else {
                         break;
@@ -232,7 +232,7 @@ public class UserService {
             }
 
             if (!InputService.isEmailValid(newEmail)){
-                System.out.println("Email is not valid. Please try again.");
+                System.out.println("Email format is not valid. Please try again.");
             } else {
                 Response<Boolean> CheckEmailResponse = UserRepository.isEmailExisting(newEmail);
                 if (response.getMessage().equals("Success") && CheckEmailResponse.getValue()) {
@@ -246,7 +246,7 @@ public class UserService {
                         if (!whitelistResponse.getMessage().equals("Success")) {
                             System.out.println("Error Message :" + whitelistResponse.getMessage());
                         } else {
-                            System.out.println("Registration failed. Email is not whitelisted.");
+                            System.out.println("Updating failed. Email is not whitelisted.");
                             return;
                         }
 
@@ -345,9 +345,13 @@ public class UserService {
         String response = UserRepository.deleteUser(loggedUser.getIdUser());
         if (response.equals("User Deleted Successfully")){
             System.out.println("The user has been successfully deleted.");
+            TerminalService.start();
+            System.exit(0);
         }else{
             System.out.println("Error Message :" + response);
         }
+
+
     }
 
     public static void deleteControllerAdmin(Scanner scanner, User loggedUser) {
@@ -355,6 +359,13 @@ public class UserService {
         readInfoUsers(scanner);
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
         int idUser = InputService.idInput(scanner, userIdResponse);
+
+        if (idUser == 0){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+
         Response<User> response = UserRepository.getUserById(idUser);
         if(!response.getMessage().equals("Success")){
             System.out.println("Error Message :" + response.getMessage());

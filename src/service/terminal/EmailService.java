@@ -49,8 +49,14 @@ public class EmailService {
             System.out.printf("ID: %d | Email: %s%n", i + 1, emails.get(i));
         }
 
-        System.out.println("Enter the ID of the email you want to remove:");
-        int emailId = InputService.intInput(1, emails.size(), scanner);
+        System.out.println("Enter the ID of the email you want to remove (0 to cancel):");
+        int emailId = InputService.intInput(0, emails.size(), scanner);
+
+        if (emailId == 0){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
         String selectedEmail = emails.get(emailId - 1);
         String result = EmailRepository.removeEmail(selectedEmail);
 

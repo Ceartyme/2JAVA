@@ -11,11 +11,23 @@ import java.util.Scanner;
 public class ItemService {
     public static void createItemController(Scanner scanner){
         scanner.nextLine();
-        System.out.println("Enter the name of the new item: ");
-        String name = scanner.nextLine().trim();
-        if (name.isEmpty()) {
-            System.out.println("Item name cannot be empty. Operation cancelled.");
-            return;
+        String name;
+        while (true) {
+            System.out.println("Enter the name of the new item: ");
+            name = scanner.nextLine().trim();
+
+            if (name.isEmpty()) {
+                System.out.println("Item name cannot be empty. Please enter a valid name.");
+                continue;
+            }
+
+
+            Response<Item> existingItemResponse = ItemRepository.getItemByName(name);
+            if (existingItemResponse.getMessage().equals("Success") && existingItemResponse.getValue() != null) {
+                System.out.println("An item with this name already exists. Please enter another name.");
+            } else {
+                break;
+            }
         }
 
         System.out.println("Enter the price of the new item:");
@@ -51,9 +63,9 @@ public class ItemService {
         }
         Response<ArrayList<Integer>> itemIdResponse = ItemRepository.getIdItems();
         int idItem = InputService.idInput(scanner, itemIdResponse);
-        boolean itemExists = items.stream().anyMatch(item -> item.getIdItem() == idItem);
-        if (!itemExists) {
-            System.out.println("Invalid item ID. Deletion cancelled.");
+
+        if(idItem == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -104,10 +116,23 @@ public class ItemService {
         Item selectedItem = selectedItemResponse.getValue();
 
         scanner.nextLine();
-        System.out.println("Enter the new name for the item (or press Enter to keep current name: " + selectedItem.getName() + "):");
-        String newName = scanner.nextLine().trim();
-        if (newName.isEmpty()) {
-            newName = selectedItem.getName();
+        String newName;
+        while (true) {
+            System.out.println("Enter the new name for the item (or press Enter to keep current name: " + selectedItem.getName() + "):");
+            newName = scanner.nextLine().trim();
+
+            if (newName.isEmpty()) {
+                newName = selectedItem.getName();
+                break;
+            }
+
+
+            Response<Item> existingItemResponse = ItemRepository.getItemByName(newName);
+            if (existingItemResponse.getMessage().equals("Success") && existingItemResponse.getValue() != null) {
+                System.out.println("An item with this name already exists. Please enter another name.");
+            } else {
+                break;
+            }
         }
 
         System.out.println("Enter the new price for the item (or 0 to keep current price: $" + selectedItem.getPrice() + "):");
@@ -123,9 +148,9 @@ public class ItemService {
         String result = ItemRepository.updateItem(selectedItem);
 
         if (result.equals("Item Updated Successfully")) {
-            System.out.println("✅ Item updated successfully!");
+            System.out.println("Item updated successfully!");
         } else {
-            System.out.println("❌ Error: " + result);
+            System.out.println("Error: " + result);
         }
 
     }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class InputService{
     public static int intInput(int minimum, int maximum, Scanner input){
         try {
-            System.out.println("Enter an number between "+minimum+" and "+maximum+" : ");
+            System.out.println("Enter a number between "+minimum+" and "+maximum+" : ");
             int response = input.nextInt();
             if(response>maximum || response<minimum){
                 return intInput(minimum, maximum, input);

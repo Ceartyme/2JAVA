@@ -25,17 +25,30 @@ public class StoreService {
         int i=0;
         for (Store store : stores){
             i++;
-            System.out.println( i + " - " + store.getName());
+            System.out.println( store.getIdStore() + " - " + store.getName());
         }
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
+
         int choice = InputService.idInput(scanner, storeIdResponse);
-        System.out.println(choice);
-        Store selectedStore = stores.get(choice - 1);
+
+        if (choice == 0){
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        Response<Store> selectedStoreResponse = StoreRepository.getStoreById(choice);
+        if(!selectedStoreResponse.getMessage().equals("Success")){
+            System.out.println("Error : " + selectedStoreResponse.getMessage());
+            return;
+        }
+
+        Store selectedStore = selectedStoreResponse.getValue();
+
         System.out.println("Selected store : " + selectedStore.getName());
         Response<ArrayList<Inventory>> inventoryResponse = InventoryRepository.getItemsByStore(selectedStore.getIdStore());
         if(!inventoryResponse.getMessage().equals("Success")){
-            System.out.println("Error : " + inventoryResponse.getMessage());
+            System.out.println("Error : This store does not have any items");
             return;
         }
 
@@ -118,9 +131,9 @@ public class StoreService {
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -147,21 +160,33 @@ public class StoreService {
 
         Response<ArrayList<Integer>> userIdResponse = UserRepository.getIdUser();
         int userId = InputService.idInput(scanner, userIdResponse);
-        boolean userExists = users.stream().anyMatch(user -> user.getIdUser() == userId);
-        if (!userExists) {
-            System.out.println("Invalid user ID. Operation cancelled.");
+
+        if (userId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
         String hireResult = WorkingRepository.hire(storeId, userId);
+
+
         if (hireResult.equals("User hired successfully")) {
             System.out.println("The user has been successfully hired and assigned to the store.");
-            String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 2);
-            if (updateRoleResult.equals("User role updated successfully")) {
-                System.out.println("The user's role has been successfully updated to EMPLOYEE.");
-            }else {
-                System.out.println("Error updating user's role: " + updateRoleResult);
+
+            Response<User> userHiredResponse = UserRepository.getUserById(userId);
+            if (!userHiredResponse.getMessage().equals("Success")) {
+                System.out.println("Error receiving user.");
             }
+
+            User userHired = userHiredResponse.getValue();
+            if(userHired.getRole() == Role.USER) {
+                String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 2);
+                if (updateRoleResult.equals("User role updated successfully")) {
+                    System.out.println("The user's role has been successfully updated to EMPLOYEE.");
+                }else {
+                    System.out.println("Error updating user's role: " + updateRoleResult);
+                }
+            }
+
         } else {
             System.out.println("Error hiring user: User already hire in this store");
         }
@@ -195,14 +220,12 @@ public class StoreService {
             int storeId = InputService.idInput(scanner, storeIdResponse);
 
             if (storeId == 0){
+                System.out.println("Operation cancelled.");
                 running=false;
-            }
-
-            boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-            if (!storeExists) {
-                System.out.println("Invalid store ID. Operation cancelled.");
                 return;
             }
+
+
 
             String hireResult = WorkingRepository.hire(storeId, userId);
             if (hireResult.equals("User hired successfully")) {
@@ -243,9 +266,10 @@ public class StoreService {
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -275,10 +299,8 @@ public class StoreService {
         Response<ArrayList<Integer>> employeeIdResponse = new Response<>(employeesIds);
         int userId = InputService.idInput(scanner, employeeIdResponse);
 
-
-        boolean userExists = employees.stream().anyMatch(user -> user.getIdUser() == userId);
-        if (!userExists) {
-            System.out.println("Invalid employee ID. Operation cancelled.");
+        if (userId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -287,8 +309,15 @@ public class StoreService {
             System.out.println("The employee has been successfully removed from the store.");
 
             Response<ArrayList<Store>> userStoresResponse = StoreRepository.getStoresByEmployeeId(userId);
-            System.out.println(userStoresResponse.getMessage());
-            if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.")) {
+
+            Response<User> userHiredResponse = UserRepository.getUserById(userId);
+            if (!userHiredResponse.getMessage().equals("Success")) {
+                System.out.println("Error receiving user.");
+            }
+
+            User userFired = userHiredResponse.getValue();
+
+            if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.") && userFired.getRole() == Role.EMPLOYEE) {
                 String updateRoleResult = WorkingRepository.updateUserRoleEmployee(userId, 3);
                 if (updateRoleResult.equals("User role updated successfully")) {
                     System.out.println("The user's role has been updated to USER.");
@@ -322,11 +351,12 @@ public class StoreService {
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
+
 
         System.out.println("\nFetching all administrators...");
         Response<ArrayList<User>> adminResponse = UserRepository.getAllAdmin();
@@ -384,9 +414,9 @@ public class StoreService {
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStoresByEmployeeId(loggedUserid);
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean isValidStore = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!isValidStore) {
-            System.out.println("Error: Invalid store ID.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -445,9 +475,9 @@ public class StoreService {
 
         Response<ArrayList<Integer>> storeIdResponse = StoreRepository.getIdStores();
         int storeId = InputService.idInput(scanner, storeIdResponse);
-        boolean storeExists = stores.stream().anyMatch(store -> store.getIdStore() == storeId);
-        if (!storeExists) {
-            System.out.println("Invalid store ID. Operation cancelled.");
+
+        if (storeId == 0){
+            System.out.println("Operation cancelled.");
             return;
         }
 
@@ -468,7 +498,8 @@ public class StoreService {
                 int employeeId = employee.getIdUser();
 
                 Response<ArrayList<Store>> userStoresResponse = StoreRepository.getStoresByEmployeeId(employeeId);
-                if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.")) {
+
+                if (userStoresResponse.getMessage().equals("No stores found for the given employee ID.") && employee.getRole() == Role.EMPLOYEE) {
                     String updateRoleResult = WorkingRepository.updateUserRoleEmployee(employeeId, 3);
                     if (updateRoleResult.equals("User role updated successfully")) {
                         System.out.printf("Employee ID: %d has been demoted to USER.%n", employeeId);
@@ -530,22 +561,34 @@ public class StoreService {
         Store selectedStore = selectedStoreResponse.getValue();
 
         scanner.nextLine();
-        System.out.println("Enter the new name for the store:");
-        String newName = scanner.nextLine().trim();
 
-        if (newName.isEmpty()) {
-            System.out.println("Error: Store name cannot be empty.");
-            return;
+        String newName;
+        while (true) {
+            System.out.println("Enter the new name for the store (or press Enter to keep current name: " + selectedStore.getName() + "):");
+            newName = scanner.nextLine().trim();
+
+            if (newName.isEmpty()) {
+                newName = selectedStore.getName();
+                break;
+            }
+
+
+            Response<Store> existingStoreResponse = StoreRepository.getStoreByName(newName);
+            if (existingStoreResponse.getMessage().equals("Success") && existingStoreResponse.getValue() != null) {
+                System.out.println("A store with this name already exists. Please enter another name.");
+            } else {
+                break;
+            }
         }
 
         selectedStore.setName(newName);
         String result = StoreRepository.updateStore(selectedStore);
 
-        // Affichage du résultat de l'opération
+
         if (result.equals("Store Updated Successfully")) {
-            System.out.println("✅ Store updated successfully!");
+            System.out.println("Store updated successfully!");
         } else {
-            System.out.println("❌ Error: " + result);
+            System.out.println("Error: " + result);
         }
 
 

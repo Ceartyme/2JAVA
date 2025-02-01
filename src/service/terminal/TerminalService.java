@@ -66,8 +66,6 @@ public class TerminalService {
                     break;
                 case 4:
                     UserService.deleteController(scanner, loggedUser);
-                    System.out.println("Logout !");
-                    running = false;
                     break;
                 case 5:
                     System.out.println("Logout !");
@@ -175,8 +173,6 @@ public class TerminalService {
                     break;
                 case 5:
                     UserService.deleteController(scanner, loggedUser);
-                    System.out.println("Logout !");
-                    running = false;
                     break;
                 case 6:
                     System.out.println("Logout !");
