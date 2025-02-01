@@ -283,7 +283,7 @@ public class UserService {
 
 
 
-            if (userToUpdate.getRole() == Role.EMPLOYEE){
+            if (userToUpdate.getRole() == Role.EMPLOYEE && RoleUser != Role.EMPLOYEE){
                 System.out.println("This user become an Employee, you can attribute him to a store...");
                 StoreService.addUpdatedUserEmployeesController(scanner, userToUpdate.getIdUser());
 
