@@ -1,13 +1,18 @@
 package service.swing;
 
 import model.Item;
+import model.Role;
 import model.Store;
 import model.User;
+import repository.EmailRepository;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SwingService extends JFrame {
     private User user;
@@ -28,9 +33,9 @@ public class SwingService extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JButton loginButton = buttonMaker("Log In","src/img/icons/delete.png" );
-        loginButton.addActionListener(e -> this.loginDisplay());
+        loginButton.addActionListener(_ -> this.loginDisplay());
         JButton registerButton =buttonMaker("Register","src/img/icons/delete.png" );
-        registerButton.addActionListener(e -> this.registerDisplay());
+        registerButton.addActionListener(_ -> this.registerDisplay());
         JButton exitButton = this.exitButton();
 
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -59,7 +64,7 @@ public class SwingService extends JFrame {
 
         JLabel emailLabel = new JLabel("Email : ");
         JTextField emailTextField = new JTextField();
-        setPlaceholder(emailTextField,"example@example.com");
+        setPlaceholder(emailTextField);
         emailPanel.add(emailLabel);
         emailPanel.add(emailTextField);
 
@@ -74,9 +79,9 @@ public class SwingService extends JFrame {
         passwordPanel.add(passwordTextField);
 
         JButton logInButton = new JButton("Log In");
-        logInButton.addActionListener(e -> this.login(emailTextField.getText(),passwordTextField.getText()));
+        logInButton.addActionListener(_ -> this.login(emailTextField.getText(),passwordTextField.getText()));
         JButton backButton = new JButton("<- Back");
-        backButton.addActionListener(e -> this.startDisplay());
+        backButton.addActionListener(_ -> this.startDisplay());
 
 
         emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -101,13 +106,17 @@ public class SwingService extends JFrame {
     private void login(String email, String password){
         try{
             this.user=UserService.login(email, password);
-            this.menuDispatch();
+            this.menuDisplay();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
     }
 
     private void registerDisplay(){
+        createUserDisplay(false);
+    }
+
+    private void createUserDisplay(boolean accessedByAdmin) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -127,7 +136,7 @@ public class SwingService extends JFrame {
 
         JLabel emailLabel = new JLabel("Email : ");
         JTextField emailTextField = new JTextField();
-        setPlaceholder(emailTextField,"example@example.com");
+        setPlaceholder(emailTextField);
         emailPanel.add(emailLabel);
         emailPanel.add(emailTextField);
 
@@ -141,15 +150,42 @@ public class SwingService extends JFrame {
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordTextField);
 
-        JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(e -> this.register(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText()));
+        JPanel rolePanel = null;
+        JComboBox<Role> roleCombobox;
+        if (accessedByAdmin) {
+            rolePanel = new JPanel();
+            rolePanel.setMaximumSize(this.subPanelSize);
+            rolePanel.setLayout(new BoxLayout(rolePanel, BoxLayout.Y_AXIS));
+            JLabel roleLabel = new JLabel("Role :");
+            roleCombobox = new JComboBox<>(Role.values());
+            roleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            rolePanel.add(roleLabel);
+            rolePanel.add(roleCombobox);
+        } else {
+            roleCombobox = null;
+        }
+
+        String buttonText = "Register";
+        if (accessedByAdmin) buttonText = "Create User";
+        JButton createButton = new JButton(buttonText);
+        if (!accessedByAdmin) {
+            createButton.addActionListener(_ -> this.register(usernameTextField.getText(), emailTextField.getText(), passwordTextField.getText()));
+        } else {
+            createButton.addActionListener(_ -> this.createUser(usernameTextField.getText(), emailTextField.getText(), passwordTextField.getText(),(Role) roleCombobox.getSelectedItem()));
+        }
+
         JButton backButton = new JButton("<- Back");
-        backButton.addActionListener(e -> this.startDisplay());
+        if(!accessedByAdmin) {
+            backButton.addActionListener(_ -> this.startDisplay());
+        } else {
+            backButton.addActionListener(_ -> this.userMenuDisplay());
+        }
 
         usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (accessedByAdmin) rolePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(Box.createVerticalGlue());
@@ -159,7 +195,11 @@ public class SwingService extends JFrame {
         panel.add(Box.createVerticalStrut(20));
         panel.add(passwordPanel);
         panel.add(Box.createVerticalStrut(20));
-        panel.add(registerButton);
+        if(accessedByAdmin){
+            panel.add(rolePanel);
+            panel.add(Box.createVerticalStrut(20));
+        }
+        panel.add(createButton);
         panel.add(Box.createVerticalStrut(50));
         panel.add(backButton);
         panel.add(Box.createVerticalGlue());
@@ -168,85 +208,70 @@ public class SwingService extends JFrame {
         this.setVisible(true);
     }
 
-    private void register(String username, String email, String password){
+    private void createUser(String username, String email, String password, Role role) {
         try{
-            this.user=UserService.register(username,email, password);
-            this.menuDispatch();
+            if(!EmailService.isWhitelisted(email)){
+                int response = JOptionPane.showConfirmDialog(this,"Going forward will automatically whitelist that email","email whitelisting",JOptionPane.OK_CANCEL_OPTION);
+                if(response==JOptionPane.CANCEL_OPTION){
+                    return;
+                }
+                EmailService.whitelistEmail(email);
+            }
+            UserService.createUser(username,email, password,role);
+            JOptionPane.showMessageDialog(this, "User created successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+            this.userMenuDisplay();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
     }
 
-    private void menuDispatch(){
-        this.setSize(1000,1000);
-        switch (this.user.getRole()){
-            case USER -> menuUserDisplay();
-            case ADMIN -> menuAdminDisplay();
-            case EMPLOYEE -> menuEmployeeDisplay();
+    private void register(String username, String email, String password){
+        try{
+            this.user=UserService.createUser(username,email, password,Role.USER);
+            this.menuDisplay();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
     }
 
-    private void menuUserDisplay(){
+    private void menuDisplay(){
+        this.setSize(1000,1000);
+        boolean isAdmin = this.user.getRole()==Role.ADMIN;
+        boolean isEmployee = this.user.getRole()==Role.EMPLOYEE;
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-
+        JButton itemMenuButton = null;
+        if(isAdmin) {
+            itemMenuButton = buttonMaker("Item menu", "src/img/icons/delete.png");
+            itemMenuButton.addActionListener(_ -> itemMenuDisplay());
+        }
+        JButton userMenuButton = buttonMaker("User menu", "src/img/icons/delete.png");
+        userMenuButton.addActionListener(_ -> userMenuDisplay());
         JButton profileButton = profileButton();
+        JButton disconnectButton = this.buttonMaker("Disconnect","src/img/icons/profile.png");
+        disconnectButton.addActionListener(_ -> this.startDisplay());
         JButton exitButton = this.exitButton();
 
+        if (isAdmin) {
+            itemMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+        userMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        disconnectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(Box.createVerticalGlue());
-
+        if(isAdmin) {
+            panel.add(itemMenuButton);
+            panel.add(Box.createVerticalStrut(30));
+        }
+        panel.add(userMenuButton);
         panel.add(Box.createVerticalStrut(30));
         panel.add(profileButton);
         panel.add(Box.createVerticalStrut(30));
-        panel.add(exitButton);
-        panel.add(Box.createVerticalGlue());
-
-        this.setContentPane(panel);
-        this.setVisible(true);
-    }
-    private void menuAdminDisplay(){
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        JButton itemMenuButton = buttonMaker("Item menu","src/img/icons/delete.png");
-        itemMenuButton.addActionListener(e -> itemMenuDisplay());
-        JButton profileButton = profileButton();
-        JButton exitButton = this.exitButton();
-
-        itemMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(Box.createVerticalGlue());
-        panel.add(itemMenuButton);
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(profileButton);
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(exitButton);
-        panel.add(Box.createVerticalGlue());
-
-        this.setContentPane(panel);
-        this.setVisible(true);
-    }
-    private void menuEmployeeDisplay(){
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-
-        JButton profileButton = profileButton();
-        JButton exitButton = this.exitButton();
-
-        profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(Box.createVerticalGlue());
-
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(profileButton);
+        panel.add(disconnectButton);
         panel.add(Box.createVerticalStrut(30));
         panel.add(exitButton);
         panel.add(Box.createVerticalGlue());
@@ -292,16 +317,16 @@ public class SwingService extends JFrame {
         passwordPanel.add(passwordTextField);
 
         JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/delete.png");
-        validateButton.addActionListener(e -> this.updateAccount(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText()));
+        validateButton.addActionListener(_ -> this.updateAccount(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText()));
         validateButton.setForeground(Color.BLACK);
         validateButton.setBackground(new Color(144, 238, 144));
         validateButton.setOpaque(true);
 
         JButton disconnectButton = this.buttonMaker("Disconnect","src/img/icons/profile.png");
-        disconnectButton.addActionListener(e -> this.startDisplay());
+        disconnectButton.addActionListener(_ -> this.startDisplay());
 
         JButton deleteButton = this.buttonMaker("Delete your Account","src/img/icons/delete.png");
-        deleteButton.addActionListener(e -> this.deleteAccount());
+        deleteButton.addActionListener(_ -> this.deleteAccount());
         deleteButton.setForeground(Color.GRAY);
         deleteButton.setBackground(new Color(139, 0, 0));
         deleteButton.setOpaque(true);
@@ -336,6 +361,95 @@ public class SwingService extends JFrame {
         this.setVisible(true);
     }
 
+    private void modifyUserDisplay(User userDisplayed){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JPanel usernamePanel = new JPanel();
+        usernamePanel.setMaximumSize(this.subPanelSize);
+        usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.Y_AXIS));
+        JLabel usernameLabel = new JLabel("Username : ");
+        JTextField usernameTextField = new JTextField();
+        usernameTextField.setText(userDisplayed.getUsername());
+        usernameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        usernamePanel.add(usernameLabel);
+        usernamePanel.add(usernameTextField);
+
+        JPanel emailPanel = new JPanel();
+        emailPanel.setMaximumSize(this.subPanelSize);
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.Y_AXIS));
+        JLabel emailLabel = new JLabel("Email : ");
+        JTextField emailTextField = new JTextField();
+        emailTextField.setText(userDisplayed.getEmail());
+        emailLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailTextField);
+
+        JPanel passwordPanel = new JPanel();
+        passwordPanel.setMaximumSize(this.subPanelSize);
+        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
+        JLabel passwordLabel = new JLabel("Password :");
+        JLabel passwordLabel2 = new JLabel("(if empty your password won't get changed)");
+        JTextField passwordTextField = new JTextField();
+        passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordLabel2);
+        passwordPanel.add(passwordTextField);
+
+        JPanel rolePanel = new JPanel();
+        rolePanel.setMaximumSize(this.subPanelSize);
+        rolePanel.setLayout(new BoxLayout(rolePanel, BoxLayout.Y_AXIS));
+        JLabel roleLabel = new JLabel("Role :");
+        JComboBox<Role> roleCombobox = new JComboBox<>(Role.values());
+        roleCombobox.setSelectedItem(userDisplayed.getRole());
+        roleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rolePanel.add(roleLabel);
+        rolePanel.add(roleCombobox);
+
+        JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/delete.png");
+        validateButton.addActionListener(_ -> this.modifyUser(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText(),(Role) roleCombobox.getSelectedItem(),userDisplayed));
+        validateButton.setForeground(Color.BLACK);
+        validateButton.setBackground(new Color(144, 238, 144));
+        validateButton.setOpaque(true);
+
+        JButton deleteButton = this.buttonMaker("Delete the Account","src/img/icons/delete.png");
+        deleteButton.addActionListener(_ -> this.deleteUser(userDisplayed));
+        deleteButton.setForeground(Color.GRAY);
+        deleteButton.setBackground(new Color(139, 0, 0));
+        deleteButton.setOpaque(true);
+
+        JButton backButton = this.buttonMaker("Back","src/img/icons/profile.png");
+        backButton.addActionListener(_ -> this.userMenuDisplay());
+
+        usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rolePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalGlue());
+        panel.add(usernamePanel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(emailPanel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(passwordPanel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(roleCombobox);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(validateButton);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(deleteButton);
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(backButton);
+        panel.add(Box.createVerticalGlue());
+
+        this.setContentPane(panel);
+        this.setVisible(true);
+    }
+
     private void deleteAccount(){
         int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete your account.\nAfter doing so you'll be disconnected and you will never be able to access your account", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (response == JOptionPane.YES_OPTION) {
@@ -350,11 +464,89 @@ public class SwingService extends JFrame {
         try{
             UserService.update(username,email,password,this.user);
             JOptionPane.showMessageDialog(this, "Account updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
-            this.menuDispatch();
+            this.menuDisplay();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
 
+    }
+
+    private void userMenuDisplay(){
+        ArrayList<User> users = this.getAllUsers();
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new GridLayout(0, 1));
+
+        boolean isAdmin = this.user.getRole()==Role.ADMIN;
+        int colAmount;
+        if(isAdmin){
+            colAmount=5;
+        }else {
+            colAmount=3;
+        }
+        //title of the table
+        JPanel row = new JPanel(new GridLayout(1, colAmount));
+        row.add(new JLabel("Username", SwingConstants.CENTER));
+        row.add(new JLabel("Mail Address", SwingConstants.CENTER));
+        row.add(new JLabel("Role", SwingConstants.CENTER));
+        if(isAdmin) {
+            row.add(new JLabel("Modify User", SwingConstants.CENTER));
+            row.add(new JLabel("Delete User", SwingConstants.CENTER));
+        }
+        tablePanel.add(row);
+        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
+        if(users!=null) {
+            for (User userSelected : users) {
+                row = new JPanel(new GridLayout(1, colAmount));
+                JLabel nameLabel = new JLabel(userSelected.getUsername());
+                row.add(nameLabel);
+                JLabel emailLabel = new JLabel(userSelected.getEmail());
+                row.add(emailLabel);
+                JLabel rolePLabel= new JLabel(String.valueOf(userSelected.getRole()));
+                row.add(rolePLabel);
+                if(isAdmin) {
+                    JButton modifyButton = buttonMaker("Modify", "src/img/icons/delete.png");
+                    modifyButton.addActionListener(_ -> this.modifyUserDisplay(userSelected));
+                    row.add(modifyButton);
+                    JButton deleteButton = buttonMaker("Delete", "src/img/icons/delete.png");
+                    deleteButton.addActionListener(_ -> {
+                        this.deleteUser(userSelected);
+                        this.userMenuDisplay();
+                    });
+                    row.add(deleteButton);
+                }
+                tablePanel.add(row);
+            }
+        }
+        JButton createButton = null;
+        if(isAdmin) {
+            createButton = this.buttonMaker("Create a new User", "src/img/icons/profile.png");
+            createButton.addActionListener(_ -> this.createUserDisplay(true));
+        }
+        JButton backButton = this.backToMenuButton();
+
+        if(isAdmin){
+            createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+        tablePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalGlue());
+        panel.add(tablePanel);
+        panel.add(Box.createVerticalStrut(20));
+        if(isAdmin) {
+            panel.add(createButton);
+            panel.add(Box.createVerticalStrut(20));
+        }
+        panel.add(backButton);
+        panel.add(Box.createVerticalGlue());
+
+        this.setContentPane(panel);
+        this.setVisible(true);
     }
 
     private void itemMenuDisplay(){
@@ -376,23 +568,22 @@ public class SwingService extends JFrame {
         tablePanel.add(row);
         tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
+        if(items!=null) {
+            for (Item item : items) {
+                row = new JPanel(new GridLayout(1, 5));
+                JTextField nameTextField = this.createTextField(item.getName());
+                row.add(nameTextField);
+                JSpinner priceSpinner = this.createPriceSpinner(item.getPrice());
+                row.add(priceSpinner);
+                row.add(this.createValidateItemButton(nameTextField, priceSpinner, item));
+                row.add(this.createDeleteItemButton(item));
+                row.add(this.createViewStoresFromItemButton(item));
 
-        for(Item item :items){
-            row = new JPanel(new GridLayout(1,5));
-            JTextField nameTextField = this.createTextField(item.getName());
-            row.add(nameTextField);
-            JSpinner priceSpinner = this.createPriceSpinner(item.getPrice());
-            row.add(priceSpinner);
-            row.add(this.createValidateItemButton(nameTextField,priceSpinner,item));
-            row.add(this.createDeleteItemButton(item));
-            row.add(this.createViewStoresFromItemButton(item));
-
-            tablePanel.add(row);
-            tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+                tablePanel.add(row);
+            }
         }
-
         JButton createButton = this.buttonMaker("Create a new Item","src/img/icons/profile.png");
-        createButton.addActionListener(e -> this.displayCreateItem());
+        createButton.addActionListener(_ -> this.displayCreateItem());
 
         JButton backButton = this.backToMenuButton();
 
@@ -406,11 +597,20 @@ public class SwingService extends JFrame {
         panel.add(createButton);
         panel.add(Box.createVerticalStrut(20));
         panel.add(backButton);
-
         panel.add(Box.createVerticalGlue());
 
         this.setContentPane(panel);
         this.setVisible(true);
+    }
+
+    private ArrayList<User> getAllUsers(){
+        try {
+            return UserService.getAllUsers();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An error has occurred", "Error", JOptionPane.ERROR_MESSAGE);
+            this.menuDisplay();
+        }
+        return null;
     }
 
     private ArrayList<Item> getAllItems(){
@@ -418,7 +618,7 @@ public class SwingService extends JFrame {
             return ItemService.getAllItems();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An error has occurred", "Error", JOptionPane.ERROR_MESSAGE);
-            this.menuAdminDisplay();
+            this.menuDisplay();
         }
         return null;
     }
@@ -429,6 +629,7 @@ public class SwingService extends JFrame {
             JOptionPane.showMessageDialog(this, "Item updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+            this.itemMenuDisplay();
         }
     }
 
@@ -471,7 +672,7 @@ public class SwingService extends JFrame {
         storeDialog.add(scrollPane,BorderLayout.CENTER);
 
         JButton closeButton = buttonMaker("Close", "src/img/icons/delete.png");
-        closeButton.addActionListener(e -> storeDialog.dispose());
+        closeButton.addActionListener(_ -> storeDialog.dispose());
         storeDialog.add(closeButton,BorderLayout.SOUTH);
 
         storeDialog.setLocationRelativeTo(this);
@@ -504,10 +705,10 @@ public class SwingService extends JFrame {
         pricePanel.add(priceSpinner);
 
         JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
-        validateButton.addActionListener(e -> this.createItem(nameTextField.getText(),(double) priceSpinner.getValue(),createItemDialog) );
+        validateButton.addActionListener(_ -> this.createItem(nameTextField.getText(),(double) priceSpinner.getValue(),createItemDialog) );
 
         JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
-        cancelButton.addActionListener(e -> createItemDialog.dispose());
+        cancelButton.addActionListener(_ -> createItemDialog.dispose());
 
         pricePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         namePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -540,6 +741,72 @@ public class SwingService extends JFrame {
         }
     }
 
+    private void deleteUser(User userDeleted){
+        UserService.deleteUser(userDeleted);
+        JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+    }
+
+    private void modifyUser(String username, String email, String password, Role role, User userModified){
+        String oldEmail = userModified.getEmail();
+        Role oldRole = userModified.getRole();
+        EmailService.changeEmail(oldEmail,email);
+        boolean success = updateUser(username,email,password,role,userModified);
+        if(oldRole!=role && oldRole==Role.EMPLOYEE && success){
+            int response = JOptionPane.showConfirmDialog(this, "Do you want to remove the shops linked to that account", "Modifying role", JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION){
+                UserService.removeStores(userModified);
+            }
+        } else if (oldRole!=role && role==Role.EMPLOYEE && UserService.getAmountStore(userModified)==0 && success) {
+            int response = JOptionPane.showConfirmDialog(this, "Do you want to link a shop to that employee", "Modifying role", JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION){
+                this.dialogAddStore(userModified);
+            }
+        }
+        JOptionPane.showMessageDialog(this, "User updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+    }
+
+    private void dialogAddStore(User userModified){
+        ArrayList<Store> stores = StoreService.getAllStores();
+        if(stores==null){
+            JOptionPane.showMessageDialog(this, "There are no Stores in the database","Error",JOptionPane.ERROR_MESSAGE );
+            return;
+        }
+        JDialog dialog = new JDialog(this, "Choose a Store", true);
+        dialog.setSize(300, 150);
+        dialog.setLayout(new FlowLayout());
+
+        String[] options = new String[stores.size()];
+        for(int i = 0; i<stores.size();i++){
+            options[i]=stores.get(i).getName();
+        }
+        JComboBox<String> comboBox = new JComboBox<>(options);
+        dialog.add(comboBox);
+
+        JButton confirmButton = new JButton("OK");
+        confirmButton.addActionListener(_ -> {
+            StoreService.addStoreToEmployee(userModified,(String) comboBox.getSelectedItem());
+            dialog.dispose();
+        });
+        dialog.add(confirmButton);
+
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(_ -> dialog.dispose());
+        dialog.add(closeButton);
+
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private boolean updateUser(String username, String email, String password, Role role, User userModified){
+        try{
+            UserService.adminUpdate(username,email,password,role,userModified);
+            return true;
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+            return false;
+        }
+    }
+
     //methods to create objects that come often
     private JButton buttonMaker(String text, String filename){
         ImageIcon originalIcon = new ImageIcon(filename);
@@ -559,27 +826,27 @@ public class SwingService extends JFrame {
 
     private JButton profileButton(){
         JButton profileButton = this.buttonMaker("Profile","src/img/icons/profile.png");
-        profileButton.addActionListener(e -> this.profileDisplay());
+        profileButton.addActionListener(_ -> this.profileDisplay());
         return profileButton;
     }
 
     private JButton exitButton(){
         JButton exitButton = buttonMaker("Exit","src/img/icons/delete.png" );
-        exitButton.addActionListener(e -> System.exit(0));
+        exitButton.addActionListener(_ -> System.exit(0));
         return exitButton;
     }
 
     private JButton backToMenuButton(){
-        JButton profileButton = this.buttonMaker("Back","src/img/icons/profile.png");
-        profileButton.addActionListener(e -> this.menuDispatch());
-        return profileButton;
+        JButton backButton = this.buttonMaker("Back","src/img/icons/profile.png");
+        backButton.addActionListener(_ -> this.menuDisplay());
+        return backButton;
     }
 
     private JTextField createTextField(String defaultText){
         JTextField textField = new JTextField();
         textField.setText(defaultText);
-        textField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
+        textField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent evt) {
                 if (textField.getText().isEmpty()) {
                     textField.setText(defaultText);
                 }
@@ -601,7 +868,7 @@ public class SwingService extends JFrame {
         validateButton.setBackground(new Color(144, 238, 144));
         validateButton.setOpaque(true);
         validateButton.setBorderPainted(false);
-        validateButton.addActionListener(e -> {
+        validateButton.addActionListener(_ -> {
             String name = nameField.getText();
             double price = (double) priceSpinner.getValue();
             this.updateItem(name,price,item);
@@ -615,31 +882,31 @@ public class SwingService extends JFrame {
         deleteButton.setBackground(new Color(139, 0, 0));
         deleteButton.setOpaque(true);
         deleteButton.setBorderPainted(false);
-        deleteButton.addActionListener(e -> this.deleteItem(item));
+        deleteButton.addActionListener(_ -> this.deleteItem(item));
         return deleteButton;
     }
 
     private JButton createViewStoresFromItemButton(Item item){
         JButton viewButton = buttonMaker("View","src/img/icons/delete.png");
-        viewButton.addActionListener(e -> displayStoresFromItem(item));
+        viewButton.addActionListener(_ -> displayStoresFromItem(item));
         return viewButton;
     }
 
     //listeners methods
-    private static void setPlaceholder(JTextField textField, String placeholder) {
-        textField.setText(placeholder);
+    private static void setPlaceholder(JTextField textField) {
+        textField.setText("example@example.com");
         textField.setForeground(Color.GRAY);
-        textField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (textField.getText().equals(placeholder)) {
+        textField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                if (textField.getText().equals("example@example.com")) {
                     textField.setText("");
                     textField.setForeground(Color.BLACK);
                     textField.setBorder(UIManager.getBorder("TextField.border"));
                 }
             }
-            public void focusLost(java.awt.event.FocusEvent evt) {
+            public void focusLost(FocusEvent evt) {
                 if (textField.getText().isEmpty()) {
-                    textField.setText(placeholder);
+                    textField.setText("example@example.com");
                     textField.setForeground(Color.GRAY);
                     textField.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
                 }
@@ -648,11 +915,11 @@ public class SwingService extends JFrame {
     }
 
     private static void emptyListener(JTextField textField){
-        textField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+        textField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
                 textField.setBorder(UIManager.getBorder("TextField.border"));
             }
-            public void focusLost(java.awt.event.FocusEvent evt) {
+            public void focusLost(FocusEvent evt) {
                 if (textField.getText().isEmpty()) {
                     textField.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
                 }
