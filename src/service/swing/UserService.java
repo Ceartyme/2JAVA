@@ -8,6 +8,7 @@ import service.InputService;
 
 import java.util.Objects;
 
+
 public class UserService{
     protected static User login(String email,String password) throws Exception {
         if(email.isEmpty()||password.isEmpty()||Objects.equals(email,"example@example.com")){
@@ -35,17 +36,17 @@ public class UserService{
             throw new Exception("You must enter a valid Email");
         }
         Response<Boolean> response = EmailRepository.isEmailWhitelisted(email);
-        checkResponse(response);
+        GeneralService.checkResponse(response);
         if(!response.getValue()){
             throw new Exception("This Email is not whitelisted in the database");
         }
         response = UserRepository.isEmailExisting(email);
-        checkResponse(response);
+        GeneralService.checkResponse(response);
         if(response.getValue()){
             throw new Exception("There is already an account linked to that email");
         }
         response = UserRepository.isUsernameExisting(username);
-        checkResponse(response);
+        GeneralService.checkResponse(response);
         if(response.getValue()){
             throw new Exception("You cannot use that username, it is already used");
         }
@@ -58,12 +59,12 @@ public class UserService{
         }
     }
 
-    protected static User update(String username, String email, String password, User user) throws Exception{
+    protected static void update(String username, String email, String password, User user) throws Exception{
         if(!password.isEmpty()){
             user.setPassword(password);
         }
         Response<Boolean> response = UserRepository.isUsernameExisting(username);
-        checkResponse(response);
+        GeneralService.checkResponse(response);
         if(!Objects.equals(username,user.getUsername())) {
             if (response.getValue()) {
                 throw new Exception("You cannot use that username, it is already used");
@@ -72,7 +73,7 @@ public class UserService{
             }
         }
         response = UserRepository.isEmailExisting(email);
-        checkResponse(response);
+        GeneralService.checkResponse(response);
         if (!Objects.equals(email,user.getEmail())) {
             if (response.getValue()) {
                 throw new Exception("There is already an account linked to that email");
@@ -81,18 +82,10 @@ public class UserService{
             }
         }
         Response<User> responseUser = UserRepository.updateUser(user);
-        checkResponse(responseUser);
-        return user;
+        GeneralService.checkResponse(responseUser);
     }
 
     protected static void deleteUser(User user){
         UserRepository.deleteUser(user.getIdUser());
-    }
-
-    private static void checkResponse(Response response) throws Exception{
-        if(!response.getMessage().equals("Success")){
-            throw new Exception(response.getMessage());
-        }
-
     }
 }
