@@ -1,6 +1,7 @@
 package repository;
 
 import model.Response;
+import model.Store;
 import model.User;
 
 import java.sql.*;
@@ -103,6 +104,30 @@ public class WorkingRepository {
         } catch (SQLException e) {
             return "SQL ERROR: " + e.getMessage();
         } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
+    public static Response<ArrayList<Store>> getStoresFromEmployee(int idUser){
+        Connection conn = null;
+        ArrayList<Store> stores = new ArrayList<>();
+        try {
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.WORKING WHERE IdUser="+idUser+";");
+            if(!rs.next()){
+                return new Response<>("There are no employees in this store");
+            }
+            do {
+                Response<Store> storeResponse = StoreRepository.getStoreById(rs.getInt("IdStore"));
+                if(Objects.equals(storeResponse.getMessage(), "Success")) {
+                    stores.add(storeResponse.getValue());
+                }
+            }while (rs.next());
+            return new Response<>(stores);
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
             Repository.closeConnection(conn);
         }
     }
