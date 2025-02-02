@@ -202,9 +202,9 @@ public class UserService {
                 userToUpdate.getEmail(),
                 userToUpdate.getRole()
         );
-
+        scanner.nextLine();
         while (true){
-            scanner.nextLine();
+
             System.out.println("Enter new Username (or press enter to keep current) :");
             String newUsername = scanner.nextLine().trim();
             if (newUsername.isEmpty()){

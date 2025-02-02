@@ -12,11 +12,25 @@ import java.util.Scanner;
 public class EmailService {
     public static void addWhitelistEmailController(Scanner scanner) {
         scanner.nextLine();
-        System.out.print("Enter email address: ");
-        String email = scanner.nextLine();
+        String email = InputService.emailInput(scanner);
 
         if (email == null || email.isEmpty()) {
             System.out.println("Email cannot be empty. Operation cancelled.");
+            return;
+        }
+
+        Response<ArrayList<String>> allEmailsResponse = EmailRepository.getAllEmails();
+
+        if (!allEmailsResponse.getMessage().equals("Success")) {
+            System.out.println("Error fetching emails: " + allEmailsResponse.getMessage());
+            return;
+        }
+
+        ArrayList<String> emails = allEmailsResponse.getValue();
+
+        if (emails.contains(email)) {
+            System.out.println("This email is already whitelisted. Please enter a different email.");
+            addWhitelistEmailController(scanner);
             return;
         }
 
