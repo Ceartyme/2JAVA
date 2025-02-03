@@ -15,21 +15,21 @@ docker run --name mysql -p <Port choisi>:3306 -e MYSQL_ROOT_PASSWORD=<mdp choisi
 
 2. Dans le volet de droite, cliquez sur l'onglet **Database**.
 
-![img_1.png](src/img/img_1.png)
+![img_1.png](src/img/db-icon.png)
 
 
 3. Cliquez sur le bouton **+** dans la barre supérieure, puis sélectionnez **Data Source** -> **MySQL**.
 
-![img_2.png](src/img/img_2.png)
+![img_2.png](src/img/new-db.png)
 
-![img_1.png](src/img/img_3.png)
+![img_1.png](src/img/MySQL-db.png)
 4. Dans la fenêtre de configuration qui s'ouvre, remplissez les champs suivants :
     - **Host** : `localhost`
     - **Port** : *port choisi*
     - **User** : `root`
     - **Password** : *mot de passe choisi dans la commande Docker*
 
-![img.png](src/img/img4.png)
+![img.png](src/img/connect-db.png)
 
 5. Cliquez sur **Test Connection** pour vérifier que la connexion à la base de données fonctionne.
 6. Une fois la connexion réussie, cliquez sur **OK** pour sauvegarder la configuration.
@@ -44,7 +44,7 @@ Vous avez maintenant configuré l'accès à la base de données dans IntelliJ.
     - **Target Data Source / Scheme** : sélectionnez `localhost` (ou la connexion configurée à l'étape précédente).
 4. Cliquez sur **Run** pour exécuter le script.
 
-![img_1.png](src/img/img_5.png)
+![img_1.png](src/img/config-db-localhost.png)
 
 Le script va initialiser la base de données avec les données nécessaires pour le projet.
 
@@ -78,12 +78,16 @@ Téléchargez les versions suivantes des bibliothèques nécessaires :
 1. Lancez IntelliJ IDEA.
 2. Cliquez sur les trois petits points en haut à gauche du projet (ou allez dans `File` > `Project Structure`).
 
+![img.png](src/img/Project-Structure.png)
+
 ### 3. **Ajouter les bibliothèques**
 1. Dans la fenêtre `Project Structure`, allez dans l'onglet **Libraries**.
 2. Cliquez sur le bouton **+** pour ajouter une nouvelle bibliothèque.
 3. Choisissez **Java** comme type de bibliothèque.
 4. Sélectionnez le fichier `.jar` de la bibliothèque que vous avez téléchargée.
 5. Cliquez sur **OK** pour valider.
+
+![img.png](src/img/bibliotheques.png)
 
 ### 4. **Répétez pour chaque bibliothèque**
 Ajoutez les bibliothèques suivantes une par une en suivant les étapes ci-dessus :
