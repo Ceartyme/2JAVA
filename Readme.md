@@ -23,6 +23,7 @@ docker run --name mysql -p <Port choisi>:3306 -e MYSQL_ROOT_PASSWORD=<mdp choisi
 ![img_2.png](src/img/new-db.png)
 
 ![img_1.png](src/img/MySQL-db.png)
+
 4. Dans la fenêtre de configuration qui s'ouvre, remplissez les champs suivants :
     - **Host** : `localhost`
     - **Port** : *port choisi*
