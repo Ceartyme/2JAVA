@@ -105,4 +105,11 @@ Ajoutez les bibliothèques suivantes une par une en suivant les étapes ci-dessu
 Vous avez ajouté avec succès toutes les dépendances nécessaires au projet.
 
 
+## Étape 6 : Première connexion à l'application en tant qu'Administrateur
 
+Par défaut, un compte administrateur est disponible pour se connecter à l'application :
+
+- **E-mail** : `admin@istore.com`
+- **Mot de passe** : `root`
+
+Utilisez ces identifiants pour accéder aux fonctionnalités administratives de l'application.
