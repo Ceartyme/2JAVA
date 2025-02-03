@@ -243,9 +243,13 @@ public class SwingService extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JButton itemMenuButton = null;
+        JButton emailMenuButton = null;
         if(isAdmin) {
             itemMenuButton = buttonMaker("Item menu", "src/img/icons/delete.png");
             itemMenuButton.addActionListener(_ -> itemMenuDisplay());
+
+            emailMenuButton = buttonMaker("Email menu", "src/img/icons/delete.png");
+            emailMenuButton.addActionListener(_ -> emailMenuDisplay());
         }
         JButton userMenuButton = buttonMaker("User menu", "src/img/icons/delete.png");
         userMenuButton.addActionListener(_ -> userMenuDisplay());
@@ -256,6 +260,7 @@ public class SwingService extends JFrame {
 
         if (isAdmin) {
             itemMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            emailMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         }
         userMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -265,6 +270,8 @@ public class SwingService extends JFrame {
         panel.add(Box.createVerticalGlue());
         if(isAdmin) {
             panel.add(itemMenuButton);
+            panel.add(Box.createVerticalStrut(30));
+            panel.add(emailMenuButton);
             panel.add(Box.createVerticalStrut(30));
         }
         panel.add(userMenuButton);
@@ -549,6 +556,115 @@ public class SwingService extends JFrame {
         this.setVisible(true);
     }
 
+    private void emailMenuDisplay(){
+        ArrayList<String> emails = this.getAllEmail();
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new GridLayout(0, 1));
+
+        //title of the table
+        JPanel row = new JPanel(new GridLayout(1, 2));
+        row.add(new JLabel("Mail address", SwingConstants.CENTER));
+        row.add(new JLabel("Delete Email", SwingConstants.CENTER));
+        tablePanel.add(row);
+        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
+        if(emails!=null) {
+            for (String email : emails) {
+                row = new JPanel(new GridLayout(1, 2));
+                JTextField nameTextField = this.createTextField(email);
+                row.add(nameTextField);
+                JButton deleteButton = buttonMaker("Delete","src/img/icons/delete.png");
+                deleteButton.addActionListener(_ -> this.deleteEmail(email));
+                row.add(deleteButton);
+
+                tablePanel.add(row);
+            }
+        }
+        JButton createButton = this.buttonMaker("Whitelist a new Email","src/img/icons/profile.png");
+        createButton.addActionListener(_ -> this.displayWhitelistEmail()); //createItem
+
+        JButton backButton = this.backToMenuButton();
+
+        tablePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalGlue());
+        panel.add(tablePanel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(createButton);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(backButton);
+        panel.add(Box.createVerticalGlue());
+
+        this.setContentPane(panel);
+        this.setVisible(true);
+    }
+
+    private void deleteEmail(String email) {
+        try{
+            EmailService.deleteEmail(email);
+            this.emailMenuDisplay();
+            JOptionPane.showMessageDialog(this, "Email deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
+    private void displayWhitelistEmail(){
+        JDialog whitelistEmailDialog = new JDialog(this,"Whitelist Email",true);
+        whitelistEmailDialog.setSize(300,300);
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+
+        JPanel emailPanel = new JPanel();
+        emailPanel.setMaximumSize(new Dimension(200,75));
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
+
+        JLabel emailLabel = new JLabel("Email : ");
+        JTextField emailTextField = new JTextField();
+        setPlaceholder(emailTextField);
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailTextField);
+
+        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        validateButton.addActionListener(_ -> this.createEmail(emailTextField.getText(),whitelistEmailDialog) );
+
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        cancelButton.addActionListener(_ -> whitelistEmailDialog.dispose());
+
+        emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        dialogPanel.add(Box.createVerticalGlue());
+        dialogPanel.add(emailPanel);
+        dialogPanel.add(Box.createVerticalStrut(20));
+        dialogPanel.add(validateButton);
+        dialogPanel.add(Box.createVerticalStrut(30));
+        dialogPanel.add(cancelButton);
+        dialogPanel.add(Box.createVerticalGlue());
+
+        whitelistEmailDialog.add(dialogPanel);
+        whitelistEmailDialog.setLocationRelativeTo(this);
+        whitelistEmailDialog.setVisible(true);
+    }
+
+    private void createEmail(String email, JDialog dialog) {
+        try{
+            EmailService.whitelistEmail(email);
+            JOptionPane.showMessageDialog(this, "Email whitelisted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+            dialog.dispose();
+            this.emailMenuDisplay();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
     private void itemMenuDisplay(){
         ArrayList<Item> items = this.getAllItems();
 
@@ -606,6 +722,16 @@ public class SwingService extends JFrame {
     private ArrayList<User> getAllUsers(){
         try {
             return UserService.getAllUsers();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An error has occurred", "Error", JOptionPane.ERROR_MESSAGE);
+            this.menuDisplay();
+        }
+        return null;
+    }
+
+    private ArrayList<String> getAllEmail(){
+        try {
+            return EmailService.getAllEmail();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An error has occurred", "Error", JOptionPane.ERROR_MESSAGE);
             this.menuDisplay();

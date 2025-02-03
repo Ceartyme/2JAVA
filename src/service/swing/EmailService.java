@@ -1,8 +1,15 @@
 package service.swing;
 
+import model.Item;
 import model.Response;
+import model.User;
 import repository.EmailRepository;
+import repository.ItemRepository;
+import repository.UserRepository;
 import service.InputService;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class EmailService {
     protected static void changeEmail(String oldEmail, String newEmail){
@@ -24,5 +31,21 @@ public class EmailService {
             throw new Exception("You must enter a valid Email");
         }
         EmailRepository.whitelistEmail(email);
+    }
+
+    protected static ArrayList<String> getAllEmail() throws Exception{
+        Response<ArrayList<String>> allEmail = EmailRepository.getAllEmails();
+        if(Objects.equals(allEmail.getMessage(), "There are no whitelisted email")){
+            return new ArrayList<>();
+        }
+        GeneralService.checkResponse(allEmail);
+        return allEmail.getValue();
+    }
+
+    protected static void deleteEmail(String email) throws Exception{
+        String response = EmailRepository.removeEmail(email);
+        if(!Objects.equals(response,"Mail address removed Successfully")){
+            throw new Exception(response);
+        }
     }
 }
