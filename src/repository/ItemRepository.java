@@ -113,7 +113,7 @@ public class ItemRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.Inventories WHERE IdItem="+id+";");
             if(!rs.next()){
-                return new Response<>("there are no item with that id in any store");
+                return new Response<>("This item is not user in any store");
             }
             do{
                 inventories.add(new Inventory(rs.getInt("IdStore"),rs.getInt("Amount"),rs.getInt("IdItem")));
