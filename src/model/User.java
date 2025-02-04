@@ -2,6 +2,8 @@ package model;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Objects;
+
 public class User {
     private int idUser;
     private String email;
@@ -108,5 +110,18 @@ public class User {
                 ", username='" + username + '\'' +
                 ", Role='" + role + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        User user = (User) obj;
+        return idUser == user.idUser; // Comparaison basée sur l'ID unique
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idUser);
     }
 }

@@ -146,4 +146,8 @@ public class UserService{
         }
         return storeResponse.getValue().size();
     }
+
+    public static User getUserByName(String username) {
+        return UserRepository.getUserByUsername(username).getValue();
+    }
 }

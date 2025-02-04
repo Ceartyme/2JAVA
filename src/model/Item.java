@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class Item {
     private int idItem;
     private String Name;
@@ -43,5 +45,18 @@ public class Item {
                 ", Name='" + Name + '\'' +
                 ", price=" + price +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Item item = (Item) obj;
+        return idItem == item.idItem; // Comparaison basée sur l'ID unique
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idItem);
     }
 }

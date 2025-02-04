@@ -1,10 +1,7 @@
 package service.swing;
 
 import model.*;
-import repository.InventoryRepository;
-import repository.ItemRepository;
-import repository.StoreRepository;
-import repository.WorkingRepository;
+import repository.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -50,5 +47,57 @@ public class StoreService {
         }
         GeneralService.checkResponse(response);
         return response.getValue();
+    }
+
+    public static ArrayList<User> getUserFromStore(Store store) throws Exception {
+        ArrayList<User> returnValue = new ArrayList<>();
+        Response<ArrayList<User>> responseAdmin= UserRepository.getAllAdmin();
+        Response<ArrayList<User>> responseEmployee = WorkingRepository.getEmployeesFromStore(store.getIdStore());
+        if(!Objects.equals(responseAdmin.getMessage(), "Error not any administrator in database") && !Objects.equals(responseAdmin.getMessage(), "Success")){
+            throw new Exception(responseAdmin.getMessage());
+        }
+        if(!Objects.equals(responseEmployee.getMessage(), "There are no employees in this store") && !Objects.equals(responseEmployee.getMessage(), "Success")){
+            throw new Exception(responseEmployee.getMessage());
+        }
+        if(!Objects.equals(responseAdmin.getMessage(), "Error not any administrator in database")){
+            returnValue.addAll(responseAdmin.getValue());
+        }
+        if(!Objects.equals(responseEmployee.getMessage(), "There are no employees in this store")){
+            returnValue.addAll(responseEmployee.getValue());
+        }
+
+        return returnValue;
+    }
+
+    public static void fire(User user, Store store) {
+        WorkingRepository.fire(store.getIdStore(), user.getIdUser());
+    }
+
+    public static void hire(User user, Store store) {
+        WorkingRepository.hire(store.getIdStore(), user.getIdUser());
+    }
+
+    public static ArrayList<User> getAllEmployeesNotInStore(Store store) {
+        Response<ArrayList<User>> employeesResponse = UserRepository.getAllEmployees();
+        ArrayList<User> employees;
+        if(!Objects.equals(employeesResponse.getMessage(), "Error not any employee in database")){
+            employees = employeesResponse.getValue();
+        }else {
+            employees = new ArrayList<>();
+        }
+        Response<ArrayList<User>> employeesInStoreResponse = WorkingRepository.getEmployeesFromStore(store.getIdStore());
+        ArrayList<User> employeesInStore;
+        if(!Objects.equals(employeesInStoreResponse.getMessage(), "There are no employees in this store")){
+            employeesInStore = employeesInStoreResponse.getValue();
+        }else {
+            employeesInStore = new ArrayList<>();
+        }
+        ArrayList<User> employeesNotInStore = new ArrayList<>();
+        for(User employee : employees){
+            if(!employeesInStore.contains(employee)){
+                employeesNotInStore.add(employee);
+            }
+        }
+        return employeesNotInStore;
     }
 }
