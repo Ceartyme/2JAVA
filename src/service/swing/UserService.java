@@ -76,6 +76,14 @@ public class UserService{
                 user.setUsername(username);
             }
         }
+        if(!InputService.isEmailValid(email)){
+            throw new Exception("You must enter a valid Email");
+        }
+        response = EmailRepository.isEmailWhitelisted(email);
+        GeneralService.checkResponse(response);
+        if(!response.getValue()){
+            throw new Exception("This Email is not whitelisted in the database");
+        }
         response = UserRepository.isEmailExisting(email);
         GeneralService.checkResponse(response);
         if (!Objects.equals(email,user.getEmail())) {
