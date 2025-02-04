@@ -2,7 +2,6 @@ package service.swing;
 
 import model.*;
 import repository.EmailRepository;
-import repository.ItemRepository;
 import repository.UserRepository;
 import repository.WorkingRepository;
 import service.InputService;

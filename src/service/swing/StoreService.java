@@ -100,4 +100,8 @@ public class StoreService {
         }
         return employeesNotInStore;
     }
+
+    public static void deleteStore(Store storeSelected) {
+        StoreRepository.deleteStore(storeSelected.getIdStore());
+    }
 }

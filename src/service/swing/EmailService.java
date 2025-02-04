@@ -1,11 +1,7 @@
 package service.swing;
 
-import model.Item;
 import model.Response;
-import model.User;
 import repository.EmailRepository;
-import repository.ItemRepository;
-import repository.UserRepository;
 import service.InputService;
 
 import java.util.ArrayList;

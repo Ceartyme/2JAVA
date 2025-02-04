@@ -22,9 +22,7 @@ public class StoreService {
         }
 
         System.out.println("All stores available :");
-        int i=0;
         for (Store store : stores){
-            i++;
             System.out.println( store.getIdStore() + " - " + store.getName());
         }
 

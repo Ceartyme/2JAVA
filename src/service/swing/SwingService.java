@@ -232,7 +232,6 @@ public class SwingService extends JFrame {
     private void menuDisplay(){
         this.setSize(1000,1000);
         boolean isAdmin = this.user.getRole()==Role.ADMIN;
-        boolean isEmployee = this.user.getRole()==Role.EMPLOYEE;
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -497,24 +496,23 @@ public class SwingService extends JFrame {
         }
         //title of the table
         JPanel row = new JPanel(new GridLayout(1, colAmount));
-        row.add(new JLabel("Username", SwingConstants.CENTER));
-        row.add(new JLabel("Mail Address", SwingConstants.CENTER));
-        row.add(new JLabel("Role", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Username</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Mail Address</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Role</u></b></html>", SwingConstants.CENTER));
         if(isAdmin) {
-            row.add(new JLabel("Modify User", SwingConstants.CENTER));
-            row.add(new JLabel("Delete User", SwingConstants.CENTER));
+            row.add(new JLabel("<html><b><u>Modify User</u></b></html>", SwingConstants.CENTER));
+            row.add(new JLabel("<html><b><u>Delete User</u></b></html>", SwingConstants.CENTER));
         }
         tablePanel.add(row);
-        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
         if(users!=null) {
             for (User userSelected : users) {
                 row = new JPanel(new GridLayout(1, colAmount));
-                JLabel nameLabel = new JLabel(userSelected.getUsername());
+                JLabel nameLabel = new JLabel(userSelected.getUsername(),SwingConstants.CENTER);
                 row.add(nameLabel);
-                JLabel emailLabel = new JLabel(userSelected.getEmail());
+                JLabel emailLabel = new JLabel(userSelected.getEmail(),SwingConstants.CENTER);
                 row.add(emailLabel);
-                JLabel rolePLabel= new JLabel(String.valueOf(userSelected.getRole()));
+                JLabel rolePLabel= new JLabel(String.valueOf(userSelected.getRole()),SwingConstants.CENTER);
                 row.add(rolePLabel);
                 if(isAdmin) {
                     JButton modifyButton = buttonMaker("Modify", "src/img/icons/delete.png");
@@ -568,10 +566,9 @@ public class SwingService extends JFrame {
 
         //title of the table
         JPanel row = new JPanel(new GridLayout(1, 2));
-        row.add(new JLabel("Mail address", SwingConstants.CENTER));
-        row.add(new JLabel("Delete Email", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Mail address</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Delete Email</u></b></html>", SwingConstants.CENTER));
         tablePanel.add(row);
-        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
         if(emails!=null) {
             for (String email : emails) {
@@ -616,7 +613,7 @@ public class SwingService extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JPanel storeSelectionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        storeSelectionPanel.setMaximumSize(new Dimension(750, 100));
+        storeSelectionPanel.setMaximumSize(new Dimension(1000, 100));
         JLabel storeSelectionLabel = new JLabel("Change store : ");
         String[] options = new String[stores.size()];
         for(int i = 0; i<stores.size();i++){
@@ -630,6 +627,27 @@ public class SwingService extends JFrame {
         storeSelectionPanel.add(storeSelectionLabel);
         storeSelectionPanel.add(comboBox);
         storeSelectionPanel.add(confirmButton);
+        if(isAdmin){
+            JButton deleteStoreButton = buttonMaker("Delete Store","src/img/icons/delete.png");
+            deleteStoreButton.addActionListener(_ -> {
+                int response = JOptionPane.showConfirmDialog(this,"Are you sure you want to delete "+storeName+" ?","Deleting Store",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if(response==JOptionPane.YES_OPTION){
+                    StoreService.deleteStore(storeSelected);
+                    ArrayList<Store> storesBis = StoreService.getAllStores();
+                    if(storesBis==null){
+                        JOptionPane.showMessageDialog(this,"There are no stores left","No stores",JOptionPane.WARNING_MESSAGE);
+                        this.menuDisplay();
+                    }else {
+                        this.storeItemMenuDisplay(storesBis.getFirst().getName());
+                    }
+                }
+            });
+            JButton createStoreButton = buttonMaker("Create new Store","src/img/icons/delete.png");
+            createStoreButton.setPreferredSize(new Dimension(250,45));
+            createStoreButton.addActionListener(_ -> this.dialogCreateStore(false));
+            storeSelectionPanel.add(createStoreButton);
+            storeSelectionPanel.add(deleteStoreButton);
+        }
 
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new GridLayout(0, 1));
@@ -642,25 +660,24 @@ public class SwingService extends JFrame {
         }
         //title of the table
         JPanel row = new JPanel(new GridLayout(1, colAmount));
-        row.add(new JLabel("Item name", SwingConstants.CENTER));
-        row.add(new JLabel("Price", SwingConstants.CENTER));
-        row.add(new JLabel("Quantity", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Item name</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Price</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Quantity</u></b></html>", SwingConstants.CENTER));
         if(isAdmin) {
-            row.add(new JLabel("Remove Item from store", SwingConstants.CENTER));
+            row.add(new JLabel("<html><b><u>Remove Item from store</u></b></html>", SwingConstants.CENTER));
         }
         tablePanel.add(row);
-        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
         if(items!=null) {
             for (Inventory inventory : items) {
                 Item itemSelected = ItemService.getItemById(inventory.getIdItem());
                 row = new JPanel(new GridLayout(1, colAmount));
-                JLabel nameLabel = new JLabel(itemSelected.getName());
+                JLabel nameLabel = new JLabel(itemSelected.getName(),SwingConstants.CENTER);
                 row.add(nameLabel);
-                JLabel priceLabel = new JLabel(itemSelected.getPrice()+ " €");
+                JLabel priceLabel = new JLabel(itemSelected.getPrice()+ " €",SwingConstants.CENTER);
                 row.add(priceLabel);
                 if(!isWorkingHere) {
-                    JLabel amountLabel = new JLabel(String.valueOf(inventory.getAmount()));
+                    JLabel amountLabel = new JLabel(String.valueOf(inventory.getAmount()),SwingConstants.CENTER);
                     row.add(amountLabel);
                 }else {
                     JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(inventory.getAmount(),0,1000,1));
@@ -740,9 +757,33 @@ public class SwingService extends JFrame {
         comboBox.setPreferredSize(new Dimension(100, 30));
         JButton confirmButton = buttonMaker("Confirm","src/img/icons/delete.png");
         confirmButton.addActionListener(_ -> this.storeEmployeeMenuDisplay((String) comboBox.getSelectedItem()));
+        JButton deleteStoreButton = null;
+        JButton createStoreButton = null;
+        if(isAdmin){
+            deleteStoreButton = buttonMaker("Delete Store","src/img/icons/delete.png");
+            deleteStoreButton.addActionListener(_ -> {
+                int response = JOptionPane.showConfirmDialog(this,"Are you sure you want to delete "+storeName+" ?","Deleting Store",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if(response==JOptionPane.YES_OPTION){
+                    StoreService.deleteStore(storeSelected);
+                    ArrayList<Store> storesBis = StoreService.getAllStores();
+                    if(storesBis==null){
+                        JOptionPane.showMessageDialog(this,"There are no stores left","No stores",JOptionPane.WARNING_MESSAGE);
+                        this.menuDisplay();
+                    }else {
+                        this.storeEmployeeMenuDisplay(storesBis.getFirst().getName());
+                    }
+                }
+            });
+            createStoreButton = buttonMaker("Create a new Store","src/img/icons/delete.png");
+            createStoreButton.addActionListener(_ -> this.dialogCreateStore(true));
+        }
         storeSelectionPanel.add(storeSelectionLabel);
         storeSelectionPanel.add(comboBox);
         storeSelectionPanel.add(confirmButton);
+        if(isAdmin){
+            storeSelectionPanel.add(deleteStoreButton);
+            storeSelectionPanel.add(createStoreButton);
+        }
 
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new GridLayout(0, 1));
@@ -755,23 +796,23 @@ public class SwingService extends JFrame {
         }
         //title of the table
         JPanel row = new JPanel(new GridLayout(1, colAmount));
-        row.add(new JLabel("Employee Username", SwingConstants.CENTER));
-        row.add(new JLabel("Employee Email", SwingConstants.CENTER));
-        row.add(new JLabel("Role", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Employee Username</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Employee Email</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Role</u></b></html>", SwingConstants.CENTER));
         if(isAdmin) {
-            row.add(new JLabel("Remove Employee from store", SwingConstants.CENTER));
+            row.add(new JLabel("<html><b><u>Remove Employee from store</u></b></html>", SwingConstants.CENTER));
         }
         tablePanel.add(row);
-        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
 
         if(users!=null) {
             for (User userSelected : users) {
                 row = new JPanel(new GridLayout(1, colAmount));
-                JLabel nameLabel = new JLabel(userSelected.getUsername());
+                JLabel nameLabel = new JLabel(userSelected.getUsername(),SwingConstants.CENTER);
                 row.add(nameLabel);
-                JLabel emailLabel = new JLabel(userSelected.getEmail());
+                JLabel emailLabel = new JLabel(userSelected.getEmail(),SwingConstants.CENTER);
                 row.add(emailLabel);
-                JLabel roleLabel = new JLabel(String.valueOf(userSelected.getRole()));
+                JLabel roleLabel = new JLabel(String.valueOf(userSelected.getRole()),SwingConstants.CENTER);
                 row.add(roleLabel);
                 if(isAdmin){
                     if(userSelected.getRole()!=Role.ADMIN) {
@@ -823,6 +864,46 @@ public class SwingService extends JFrame {
 
         this.setContentPane(panel);
         this.setVisible(true);
+    }
+
+    private void dialogCreateStore(boolean returnToEmployee) {
+        JDialog dialog = new JDialog(this, "Create a new Store", true);
+        dialog.setSize(300, 150);
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel();
+        panel.setSize(250,50);
+
+        JLabel nameLabel = new JLabel("Name :");
+        panel.add(nameLabel);
+        JTextField nameTextField = new JTextField();
+        emptyListener(nameTextField);
+        panel.add(nameTextField);
+
+        JButton confirmButton = new JButton("OK");
+        confirmButton.addActionListener(_ -> {
+            this.createStore(nameTextField.getText(),dialog);
+            dialog.dispose();
+            if(returnToEmployee){
+                this.storeEmployeeMenuDisplay(nameTextField.getText());
+            }else {
+                this.storeItemMenuDisplay(nameTextField.getText());
+            }
+        });
+
+        panel.add(confirmButton);
+        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialogPanel.add(panel);
+
+
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(_ -> dialog.dispose());
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialogPanel.add(closeButton);
+
+        dialog.add(dialogPanel);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void dialogHireEmployee(Store store) {
@@ -950,13 +1031,12 @@ public class SwingService extends JFrame {
 
         //title of the table
         JPanel row = new JPanel(new GridLayout(1, 5));
-        row.add(new JLabel("Product Name", SwingConstants.CENTER));
-        row.add(new JLabel("Price", SwingConstants.CENTER));
-        row.add(new JLabel("Validate Changes", SwingConstants.CENTER));
-        row.add(new JLabel("Delete Item", SwingConstants.CENTER));
-        row.add(new JLabel("View stores that use this item", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Product Name</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Price</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Validate Changes</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>Delete Item</u></b></html>", SwingConstants.CENTER));
+        row.add(new JLabel("<html><b><u>View stores that use this item</u></b></html>", SwingConstants.CENTER));
         tablePanel.add(row);
-        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
         if(items!=null) {
             for (Item item : items) {

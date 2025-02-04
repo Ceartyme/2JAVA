@@ -87,13 +87,4 @@ public class InputService{
         }
     }
 
-    public static String cancelInput(Scanner scanner) {
-        String input = scanner.nextLine().trim();
-        if (input.equalsIgnoreCase("CANCEL")) {
-            System.out.println("Action cancelled. Returning to the menu...");
-            return null;
-        }
-
-        return input;
-    }
 }

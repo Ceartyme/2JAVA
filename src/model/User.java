@@ -35,10 +35,6 @@ public class User {
         return idUser;
     }
 
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -70,16 +66,11 @@ public class User {
     }
 
     public int getRoleId() {
-        switch (role) {
-            case ADMIN:
-                return 1;
-            case EMPLOYEE:
-                return 2;
-            case USER:
-                return 3;
-            default:
-                throw new IllegalStateException("Unexpected value: " + role);
-        }
+        return switch (role) {
+            case ADMIN -> 1;
+            case EMPLOYEE -> 2;
+            case USER -> 3;
+        };
     }
 
 

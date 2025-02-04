@@ -1,6 +1,5 @@
 package repository;
 
-import model.Item;
 import model.Response;
 import model.Store;
 

@@ -52,8 +52,8 @@ public class UserRepository {
 
     public static Response<User> getUserByEmail(String email){
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+        PreparedStatement pstmt;
+        ResultSet rs;
         try{
             conn = Repository.getConnection();
 
@@ -295,8 +295,8 @@ public class UserRepository {
 
     public static Response<User> getUserByUsername(String username) {
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+        PreparedStatement pstmt;
+        ResultSet rs;
         try{
             conn = Repository.getConnection();
 

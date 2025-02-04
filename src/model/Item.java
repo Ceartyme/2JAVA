@@ -18,10 +18,6 @@ public class Item {
         return idItem;
     }
 
-    public void setIdItem(int idItem) {
-        this.idItem = idItem;
-    }
-
     public String getName() {
         return Name;
     }

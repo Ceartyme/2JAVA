@@ -14,10 +14,6 @@ public class Store {
         return idStore;
     }
 
-    public void setIdStore(int idStore) {
-        this.idStore = idStore;
-    }
-
     public String getName() {
         return name;
     }
