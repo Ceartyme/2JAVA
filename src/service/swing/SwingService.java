@@ -573,8 +573,8 @@ public class SwingService extends JFrame {
         if(emails!=null) {
             for (String email : emails) {
                 row = new JPanel(new GridLayout(1, 2));
-                JTextField nameTextField = this.createTextField(email);
-                row.add(nameTextField);
+                JLabel nameLabel = new JLabel(email,SwingConstants.CENTER);
+                row.add(nameLabel);
                 JButton deleteButton = buttonMaker("Delete","src/img/icons/delete.png");
                 deleteButton.addActionListener(_ -> this.deleteEmail(email));
                 row.add(deleteButton);
@@ -1233,8 +1233,21 @@ public class SwingService extends JFrame {
     }
 
     private void deleteUser(User userDeleted){
+        boolean modifyingItself = userDeleted.getIdUser()==this.user.getIdUser();
+        boolean disconnect = false;
+        if(modifyingItself){
+            int response = JOptionPane.showConfirmDialog(this,"Deleting your user will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
+            if(response==JOptionPane.CANCEL_OPTION){
+                return;
+            }else {
+                disconnect = true;
+            }
+        }
         UserService.deleteUser(userDeleted);
         JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+        if(disconnect){
+            this.startDisplay();
+        }
     }
 
     private void modifyUser(String username, String email, String password, Role role, User userModified){
