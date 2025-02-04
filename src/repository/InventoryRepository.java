@@ -139,6 +139,31 @@ public class InventoryRepository {
         }
     }
 
+    public static String setAmountItemInStore(int idStore, int idItem, int amount){
+        Connection conn = null;
+
+        try{
+            conn = Repository.getConnection();
+
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE IStore.Inventories SET Amount = ? WHERE IdStore = ? AND IdItem = ?;");
+            pstmt.setInt(1, amount);
+            pstmt.setInt(2, idStore);
+            pstmt.setInt(3, idItem);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                return "Item quantity successfully increased.";
+            } else {
+                return "No item found or updated in the store.";
+            }
+        } catch (SQLException e) {
+            return "SQL ERROR: " + e.getMessage();
+        } finally {
+            Repository.closeConnection(conn);
+        }
+    }
+
 }
 
 

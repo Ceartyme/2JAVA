@@ -5,7 +5,6 @@ public class Inventory {
     private int Amount;
     private int idItem;
 
-    public Inventory() {}
     public Inventory(int idStores, int Amount, int idItem) {
         this.idStores = idStores;
         this.Amount = Amount;
@@ -32,9 +31,6 @@ public class Inventory {
         return idStores;
     }
 
-    public void setIdStores(int idStores) {
-        this.idStores = idStores;
-    }
 
     @Override
     public String toString() {

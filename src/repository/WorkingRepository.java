@@ -131,4 +131,18 @@ public class WorkingRepository {
             Repository.closeConnection(conn);
         }
     }
+
+    public static Response<Boolean> isWorking(int employeeId, int storeId){
+        Connection conn = null;
+        try {
+            conn = Repository.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IStore.WORKING WHERE IdUser="+employeeId+" AND IdStore="+storeId+";");
+            return new Response<>(rs.next());
+        }catch (SQLException e){
+            return new Response<>("SQL ERROR : "+e.getMessage());
+        }finally {
+            Repository.closeConnection(conn);
+        }
+    }
 }

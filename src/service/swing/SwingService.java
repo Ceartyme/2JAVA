@@ -1,10 +1,6 @@
 package service.swing;
 
-import model.Item;
-import model.Role;
-import model.Store;
-import model.User;
-import repository.EmailRepository;
+import model.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -12,7 +8,6 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class SwingService extends JFrame {
     private User user;
@@ -251,6 +246,8 @@ public class SwingService extends JFrame {
             emailMenuButton = buttonMaker("Email menu", "src/img/icons/delete.png");
             emailMenuButton.addActionListener(_ -> emailMenuDisplay());
         }
+        JButton storeMenuButton = buttonMaker("Store menu","src/img/icons/delete.png");
+        storeMenuButton.addActionListener(_ -> this.dialogChoseStore());
         JButton userMenuButton = buttonMaker("User menu", "src/img/icons/delete.png");
         userMenuButton.addActionListener(_ -> userMenuDisplay());
         JButton profileButton = profileButton();
@@ -262,6 +259,7 @@ public class SwingService extends JFrame {
             itemMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             emailMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         }
+        storeMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         userMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         disconnectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -274,6 +272,8 @@ public class SwingService extends JFrame {
             panel.add(emailMenuButton);
             panel.add(Box.createVerticalStrut(30));
         }
+        panel.add(storeMenuButton);
+        panel.add(Box.createVerticalStrut(30));
         panel.add(userMenuButton);
         panel.add(Box.createVerticalStrut(30));
         panel.add(profileButton);
@@ -467,6 +467,7 @@ public class SwingService extends JFrame {
             JOptionPane.showMessageDialog(this, "Action cancelled");
         }
     }
+
     private void updateAccount(String username, String email, String password){
         try{
             UserService.update(username,email,password,this.user);
@@ -585,7 +586,7 @@ public class SwingService extends JFrame {
             }
         }
         JButton createButton = this.buttonMaker("Whitelist a new Email","src/img/icons/profile.png");
-        createButton.addActionListener(_ -> this.displayWhitelistEmail()); //createItem
+        createButton.addActionListener(_ -> this.displayWhitelistEmail());
 
         JButton backButton = this.backToMenuButton();
 
@@ -598,6 +599,107 @@ public class SwingService extends JFrame {
         panel.add(Box.createVerticalStrut(20));
         panel.add(createButton);
         panel.add(Box.createVerticalStrut(20));
+        panel.add(backButton);
+        panel.add(Box.createVerticalGlue());
+
+        this.setContentPane(panel);
+        this.setVisible(true);
+    }
+
+    private void storeItemMenuDisplay(String storeName){
+        ArrayList<Store> stores = StoreService.getAllStores();
+        Store storeSelected = StoreService.getStoreFromName(storeName);
+        boolean isAdmin = this.user.getRole()==Role.ADMIN;
+        boolean isWorkingHere = isAdmin || (this.user.getRole()==Role.EMPLOYEE && StoreService.isWorking(this.user,storeSelected));
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JPanel storeSelectionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        storeSelectionPanel.setMaximumSize(new Dimension(750, 100));
+        JLabel storeSelectionLabel = new JLabel("Change store : ");
+        String[] options = new String[stores.size()];
+        for(int i = 0; i<stores.size();i++){
+            options[i]=stores.get(i).getName();
+        }
+        JComboBox<String> comboBox = new JComboBox<>(options);
+        comboBox.setSelectedItem(storeName);
+        comboBox.setPreferredSize(new Dimension(100, 30));
+        JButton confirmButton = buttonMaker("Confirm","src/img/icons/delete.png");
+        confirmButton.addActionListener(_ -> this.storeItemMenuDisplay((String) comboBox.getSelectedItem()));
+        storeSelectionPanel.add(storeSelectionLabel);
+        storeSelectionPanel.add(comboBox);
+        storeSelectionPanel.add(confirmButton);
+
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new GridLayout(0, 1));
+        ArrayList<Inventory> items = this.getItemsFromStore(storeSelected);
+        int colAmount;
+        if(isAdmin){
+            colAmount=4;
+        }else {
+            colAmount=3;
+        }
+        //title of the table
+        JPanel row = new JPanel(new GridLayout(1, colAmount));
+        row.add(new JLabel("Item name", SwingConstants.CENTER));
+        row.add(new JLabel("Price", SwingConstants.CENTER));
+        row.add(new JLabel("Quantity", SwingConstants.CENTER));
+        if(isWorkingHere) {
+            row.add(new JLabel("Remove Item from store", SwingConstants.CENTER));
+        }
+        tablePanel.add(row);
+        tablePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
+        if(items!=null) {
+            for (Inventory inventory : items) {
+                Item itemSelected = ItemService.getItemById(inventory.getIdItem());
+                row = new JPanel(new GridLayout(1, colAmount));
+                JLabel nameLabel = new JLabel(itemSelected.getName());
+                row.add(nameLabel);
+                JLabel priceLabel = new JLabel(itemSelected.getPrice()+ " €");
+                row.add(priceLabel);
+                if(!isWorkingHere) {
+                    JLabel amountLabel = new JLabel(String.valueOf(inventory.getAmount()));
+                    row.add(amountLabel);
+                }else {
+                    JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(inventory.getAmount(),0,1000,1));
+                    amountSpinner.addChangeListener(_ -> InventoryService.updateAmount(itemSelected.getIdItem(),storeSelected.getIdStore(),(int) amountSpinner.getValue()));
+                    row.add(amountSpinner);
+                }
+                if(isAdmin) {
+                    JButton removeButton = buttonMaker("Remove","src/img/icons/delete.png");
+                    removeButton.addActionListener(_ -> {
+                        InventoryService.removeItemFromStore(itemSelected.getIdItem(), storeSelected.getIdStore());
+                        this.storeItemMenuDisplay(storeName);
+                    });
+                    row.add(removeButton);
+                }
+                tablePanel.add(row);
+            }
+        }
+        JButton addButton = null;
+        if(isAdmin) {
+            addButton = this.buttonMaker("Add an Item", "src/img/icons/profile.png");
+            addButton.addActionListener(_ -> this.dialogAddItem(storeSelected));
+        }
+
+        JButton backButton = this.backToMenuButton();
+
+        storeSelectionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tablePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if(isAdmin) {
+            addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(storeSelectionPanel);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(tablePanel);
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(addButton);
+        panel.add(Box.createVerticalStrut(30));
         panel.add(backButton);
         panel.add(Box.createVerticalGlue());
 
@@ -699,7 +801,10 @@ public class SwingService extends JFrame {
             }
         }
         JButton createButton = this.buttonMaker("Create a new Item","src/img/icons/profile.png");
-        createButton.addActionListener(_ -> this.displayCreateItem());
+        createButton.addActionListener(_ -> {
+            this.displayCreateItem();
+            this.itemMenuDisplay();
+        });
 
         JButton backButton = this.backToMenuButton();
 
@@ -772,6 +877,15 @@ public class SwingService extends JFrame {
     private ArrayList<Store> getStoresFromItem(Item item){
         try{
             return ItemService.getStoresFromItem(item);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+        return null;
+    }
+
+    private ArrayList<Inventory> getItemsFromStore(Store store){
+        try{
+            return StoreService.getItemsFromStore(store);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
@@ -861,7 +975,6 @@ public class SwingService extends JFrame {
             ItemService.createItem(name,price);
             JOptionPane.showMessageDialog(this, "Item created successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
             dialog.dispose();
-            this.itemMenuDisplay();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
@@ -873,6 +986,16 @@ public class SwingService extends JFrame {
     }
 
     private void modifyUser(String username, String email, String password, Role role, User userModified){
+        boolean modifyingItself = userModified.getIdUser()==this.user.getIdUser();
+        boolean disconnect = false;
+        if(modifyingItself && userModified.getRole()!=role){
+            int response = JOptionPane.showConfirmDialog(this,"Changing your role will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
+            if(response==JOptionPane.CANCEL_OPTION){
+                return;
+            }else {
+                disconnect = true;
+            }
+        }
         String oldEmail = userModified.getEmail();
         Role oldRole = userModified.getRole();
         EmailService.changeEmail(oldEmail,email);
@@ -885,42 +1008,172 @@ public class SwingService extends JFrame {
         } else if (oldRole!=role && role==Role.EMPLOYEE && UserService.getAmountStore(userModified)==0 && success) {
             int response = JOptionPane.showConfirmDialog(this, "Do you want to link a shop to that employee", "Modifying role", JOptionPane.YES_NO_OPTION);
             if(response==JOptionPane.YES_OPTION){
-                this.dialogAddStore(userModified);
+                this.dialogChoseStore(userModified);
             }
         }
         JOptionPane.showMessageDialog(this, "User updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+        if(disconnect){
+            this.startDisplay();
+        }
     }
 
-    private void dialogAddStore(User userModified){
+    private void dialogAddItem(Store store){
+        ArrayList<Item> items = InventoryService.getAllItemsNotInStore(store);
+
+        JDialog dialog = new JDialog(this, "Choose an Item to add", true);
+        dialog.setSize(300, 150);
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+        if(!items.isEmpty()) {
+            JPanel panel = new JPanel();
+            panel.setSize(250,50);
+
+            String[] options = new String[items.size()];
+            for (int i = 0; i < items.size(); i++) {
+                options[i] = items.get(i).getName();
+            }
+            JComboBox<String> comboBox = new JComboBox<>(options);
+            panel.add(comboBox);
+
+            JButton confirmButton = new JButton("OK");
+            confirmButton.addActionListener(_ -> {
+                InventoryService.addItemToStore(ItemService.getItemByName((String) comboBox.getSelectedItem()),store);
+                dialog.dispose();
+                this.storeItemMenuDisplay(store.getName());
+            });
+
+            panel.add(confirmButton);
+            panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dialogPanel.add(panel);
+        }
+        JButton createButton = new JButton("Create");
+        createButton.addActionListener(_ -> {
+            dialog.dispose();
+            this.displayCreateItem();
+            this.dialogAddItem(store);
+        });
+        createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialogPanel.add(createButton);
+
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(_ -> dialog.dispose());
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialogPanel.add(closeButton);
+
+        dialog.add(dialogPanel);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void dialogChoseStore(){
+        this.dialogChoseStore(null);
+    }
+
+    private void dialogChoseStore(User userModified){
         ArrayList<Store> stores = StoreService.getAllStores();
-        if(stores==null){
+        if(stores==null && this.user.getRole()!=Role.ADMIN){
             JOptionPane.showMessageDialog(this, "There are no Stores in the database","Error",JOptionPane.ERROR_MESSAGE );
             return;
         }
         JDialog dialog = new JDialog(this, "Choose a Store", true);
         dialog.setSize(300, 150);
-        dialog.setLayout(new FlowLayout());
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+        if(stores!=null) {
+            JPanel panel = new JPanel();
+            panel.setSize(250,50);
 
-        String[] options = new String[stores.size()];
-        for(int i = 0; i<stores.size();i++){
-            options[i]=stores.get(i).getName();
+            String[] options = new String[stores.size()];
+            for (int i = 0; i < stores.size(); i++) {
+                options[i] = stores.get(i).getName();
+            }
+            JComboBox<String> comboBox = new JComboBox<>(options);
+            panel.add(comboBox);
+
+            JButton confirmButton = new JButton("OK");
+            if (userModified != null) {
+                confirmButton.addActionListener(_ -> {
+                    StoreService.addStoreToEmployee(userModified, (String) comboBox.getSelectedItem());
+                    dialog.dispose();
+                });
+            } else {
+                confirmButton.addActionListener(_ -> {
+                    this.storeItemMenuDisplay((String) comboBox.getSelectedItem());
+                    dialog.dispose();
+                });
+            }
+            panel.add(confirmButton);
+            panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dialogPanel.add(panel);
         }
-        JComboBox<String> comboBox = new JComboBox<>(options);
-        dialog.add(comboBox);
-
-        JButton confirmButton = new JButton("OK");
-        confirmButton.addActionListener(_ -> {
-            StoreService.addStoreToEmployee(userModified,(String) comboBox.getSelectedItem());
-            dialog.dispose();
-        });
-        dialog.add(confirmButton);
-
+        if(this.user.getRole()==Role.ADMIN){
+            JButton createButton = new JButton("Create");
+            createButton.addActionListener(_ -> {
+                dialog.dispose();
+                this.displayCreateStore();
+                this.dialogChoseStore(userModified);
+            });
+            createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dialogPanel.add(createButton);
+        }
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(_ -> dialog.dispose());
-        dialog.add(closeButton);
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialogPanel.add(closeButton);
 
+        dialog.add(dialogPanel);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+    }
+
+    private void displayCreateStore() {
+        JDialog createStoreDialog = new JDialog(this,"Create Store",true);
+        createStoreDialog.setSize(300,300);
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+
+        JPanel namePanel = new JPanel();
+        namePanel.setMaximumSize(new Dimension(200,75));
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+
+        JLabel nameLabel = new JLabel("Name : ");
+        JTextField nameTextField = new JTextField();
+        emptyListener(nameTextField);
+        namePanel.add(nameLabel);
+        namePanel.add(nameTextField);
+
+
+        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        validateButton.addActionListener(_ -> this.createStore(nameTextField.getText(),createStoreDialog) );
+
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        cancelButton.addActionListener(_ -> createStoreDialog.dispose());
+
+        namePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        dialogPanel.add(Box.createVerticalGlue());
+        dialogPanel.add(namePanel);
+        dialogPanel.add(Box.createVerticalStrut(20));
+        dialogPanel.add(validateButton);
+        dialogPanel.add(Box.createVerticalStrut(30));
+        dialogPanel.add(cancelButton);
+        dialogPanel.add(Box.createVerticalGlue());
+
+        createStoreDialog.add(dialogPanel);
+        createStoreDialog.setLocationRelativeTo(this);
+        createStoreDialog.setVisible(true);
+    }
+
+    private void createStore(String name, JDialog dialog) {
+        try{
+            StoreService.createStore(name);
+            JOptionPane.showMessageDialog(this, "Store created successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+            dialog.dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
     }
 
     private boolean updateUser(String username, String email, String password, Role role, User userModified){
@@ -936,12 +1189,12 @@ public class SwingService extends JFrame {
     //methods to create objects that come often
     private JButton buttonMaker(String text, String filename){
         ImageIcon originalIcon = new ImageIcon(filename);
-        Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image scaledImage = originalIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(scaledImage);
 
         JButton button = new JButton(text,resizedIcon);
-        button.setPreferredSize(new Dimension(80,60));
-        button.setFont(new Font("Arial", Font.BOLD, 18));
+        button.setPreferredSize(new Dimension(180,45));
+        button.setFont(new Font("Arial", Font.BOLD, 15));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         button.setHorizontalTextPosition(SwingConstants.RIGHT);

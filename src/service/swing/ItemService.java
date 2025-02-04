@@ -72,4 +72,14 @@ public class ItemService {
         Response<Item> response = ItemRepository.createItem(name,price);
         GeneralService.checkResponse(response);
     }
+
+    protected static Item getItemById(int idItem){
+        Response<Item> itemResponse = ItemRepository.getItemById(idItem);
+        return itemResponse.getValue();
+    }
+
+    public static Item getItemByName(String itemName) {
+        Response<Item> itemResponse = ItemRepository.getItemByName(itemName);
+        return itemResponse.getValue();
+    }
 }
