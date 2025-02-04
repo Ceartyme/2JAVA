@@ -521,7 +521,6 @@ public class SwingService extends JFrame {
                     JButton deleteButton = buttonMaker("Delete", "src/img/icons/delete.png");
                     deleteButton.addActionListener(_ -> {
                         this.deleteUser(userSelected);
-                        this.userMenuDisplay();
                     });
                     row.add(deleteButton);
                 }
@@ -1244,10 +1243,12 @@ public class SwingService extends JFrame {
             }
         }
         UserService.deleteUser(userDeleted);
-        JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
         if(disconnect){
             this.startDisplay();
+        }else {
+            this.userMenuDisplay();
         }
+        JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
     }
 
     private void modifyUser(String username, String email, String password, Role role, User userModified){
