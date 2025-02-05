@@ -2,6 +2,8 @@
 
 >Note : Ce projet utilise Java 23.0.1. Assurez-vous que cette version est bien configurée dans votre environnement.
 
+>Lien Github du projet : https://github.com/Ceartyme/2JAVA.git
+
 ## Étape 1 : Lancer un conteneur MySQL avec Docker
 
 Exécutez la commande suivante pour démarrer un conteneur MySQL :
