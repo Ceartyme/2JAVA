@@ -111,6 +111,15 @@ public class SwingService extends JFrame {
         createUserDisplay(false);
     }
 
+    private void register(String username, String email, String password){
+        try{
+            this.user=UserService.createUser(username,email, password,Role.USER);
+            this.menuDisplay();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
     private void createUserDisplay(boolean accessedByAdmin) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -215,15 +224,6 @@ public class SwingService extends JFrame {
             UserService.createUser(username,email, password,role);
             JOptionPane.showMessageDialog(this, "User created successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
             this.userMenuDisplay();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-    }
-
-    private void register(String username, String email, String password){
-        try{
-            this.user=UserService.createUser(username,email, password,Role.USER);
-            this.menuDisplay();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
@@ -467,6 +467,26 @@ public class SwingService extends JFrame {
         }
     }
 
+    private void deleteUser(User userDeleted){
+        boolean modifyingItself = userDeleted.getIdUser()==this.user.getIdUser();
+        boolean disconnect = false;
+        if(modifyingItself){
+            int response = JOptionPane.showConfirmDialog(this,"Deleting your user will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
+            if(response==JOptionPane.CANCEL_OPTION){
+                return;
+            }else {
+                disconnect = true;
+            }
+        }
+        UserService.deleteUser(userDeleted);
+        if(disconnect){
+            this.startDisplay();
+        }else {
+            this.userMenuDisplay();
+        }
+        JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+    }
+
     private void updateAccount(String username, String email, String password){
         try{
             UserService.update(username,email,password,this.user);
@@ -476,6 +496,38 @@ public class SwingService extends JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
 
+    }
+
+    private void modifyUser(String username, String email, String password, Role role, User userModified){
+        boolean modifyingItself = userModified.getIdUser()==this.user.getIdUser();
+        boolean disconnect = false;
+        if(modifyingItself && userModified.getRole()!=role){
+            int response = JOptionPane.showConfirmDialog(this,"Changing your role will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
+            if(response==JOptionPane.CANCEL_OPTION){
+                return;
+            }else {
+                disconnect = true;
+            }
+        }
+        String oldEmail = userModified.getEmail();
+        Role oldRole = userModified.getRole();
+        EmailService.changeEmail(oldEmail,email);
+        boolean success = updateUser(username,email,password,role,userModified);
+        if(oldRole!=role && oldRole==Role.EMPLOYEE && success){
+            int response = JOptionPane.showConfirmDialog(this, "Do you want to remove the shops linked to that account", "Modifying role", JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION){
+                UserService.removeStores(userModified);
+            }
+        } else if (oldRole!=role && role==Role.EMPLOYEE && UserService.getAmountStore(userModified)==0 && success) {
+            int response = JOptionPane.showConfirmDialog(this, "Do you want to link a shop to that employee", "Modifying role", JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION){
+                this.dialogChoseStore(userModified);
+            }
+        }
+        JOptionPane.showMessageDialog(this, "User updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+        if(disconnect){
+            this.startDisplay();
+        }
     }
 
     private void userMenuDisplay(){
@@ -600,6 +652,66 @@ public class SwingService extends JFrame {
 
         this.setContentPane(panel);
         this.setVisible(true);
+    }
+
+    private void deleteEmail(String email) {
+        try{
+            EmailService.deleteEmail(email);
+            this.emailMenuDisplay();
+            JOptionPane.showMessageDialog(this, "Email deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
+    private void displayWhitelistEmail(){
+        JDialog whitelistEmailDialog = new JDialog(this,"Whitelist Email",true);
+        whitelistEmailDialog.setSize(300,300);
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
+
+        JPanel emailPanel = new JPanel();
+        emailPanel.setMaximumSize(new Dimension(200,75));
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
+
+        JLabel emailLabel = new JLabel("Email : ");
+        JTextField emailTextField = new JTextField();
+        setPlaceholder(emailTextField);
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailTextField);
+
+        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        validateButton.addActionListener(_ -> this.createEmail(emailTextField.getText(),whitelistEmailDialog) );
+
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        cancelButton.addActionListener(_ -> whitelistEmailDialog.dispose());
+
+        emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        dialogPanel.add(Box.createVerticalGlue());
+        dialogPanel.add(emailPanel);
+        dialogPanel.add(Box.createVerticalStrut(20));
+        dialogPanel.add(validateButton);
+        dialogPanel.add(Box.createVerticalStrut(30));
+        dialogPanel.add(cancelButton);
+        dialogPanel.add(Box.createVerticalGlue());
+
+        whitelistEmailDialog.add(dialogPanel);
+        whitelistEmailDialog.setLocationRelativeTo(this);
+        whitelistEmailDialog.setVisible(true);
+    }
+
+    private void createEmail(String email, JDialog dialog) {
+        try{
+            EmailService.whitelistEmail(email);
+            JOptionPane.showMessageDialog(this, "Email whitelisted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
+            dialog.dispose();
+            this.emailMenuDisplay();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
     }
 
     private void storeItemMenuDisplay(String storeName){
@@ -755,7 +867,7 @@ public class SwingService extends JFrame {
         comboBox.setSelectedItem(storeName);
         comboBox.setPreferredSize(new Dimension(100, 30));
         JButton confirmButton = buttonMaker("Confirm","src/img/icons/delete.png");
-        confirmButton.addActionListener(_ -> this.storeEmployeeMenuDisplay((String) comboBox.getSelectedItem()));
+        confirmButton.addActionListener(_ -> this.storeItemMenuDisplay((String) comboBox.getSelectedItem()));
         JButton deleteStoreButton = null;
         JButton createStoreButton = null;
         if(isAdmin){
@@ -959,66 +1071,6 @@ public class SwingService extends JFrame {
         return null;
     }
 
-    private void deleteEmail(String email) {
-        try{
-            EmailService.deleteEmail(email);
-            this.emailMenuDisplay();
-            JOptionPane.showMessageDialog(this, "Email deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-    }
-
-    private void displayWhitelistEmail(){
-        JDialog whitelistEmailDialog = new JDialog(this,"Whitelist Email",true);
-        whitelistEmailDialog.setSize(300,300);
-        JPanel dialogPanel = new JPanel();
-        dialogPanel.setLayout(new BoxLayout(dialogPanel,BoxLayout.Y_AXIS));
-
-        JPanel emailPanel = new JPanel();
-        emailPanel.setMaximumSize(new Dimension(200,75));
-        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
-
-        JLabel emailLabel = new JLabel("Email : ");
-        JTextField emailTextField = new JTextField();
-        setPlaceholder(emailTextField);
-        emailPanel.add(emailLabel);
-        emailPanel.add(emailTextField);
-
-        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
-        validateButton.addActionListener(_ -> this.createEmail(emailTextField.getText(),whitelistEmailDialog) );
-
-        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
-        cancelButton.addActionListener(_ -> whitelistEmailDialog.dispose());
-
-        emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        dialogPanel.add(Box.createVerticalGlue());
-        dialogPanel.add(emailPanel);
-        dialogPanel.add(Box.createVerticalStrut(20));
-        dialogPanel.add(validateButton);
-        dialogPanel.add(Box.createVerticalStrut(30));
-        dialogPanel.add(cancelButton);
-        dialogPanel.add(Box.createVerticalGlue());
-
-        whitelistEmailDialog.add(dialogPanel);
-        whitelistEmailDialog.setLocationRelativeTo(this);
-        whitelistEmailDialog.setVisible(true);
-    }
-
-    private void createEmail(String email, JDialog dialog) {
-        try{
-            EmailService.whitelistEmail(email);
-            JOptionPane.showMessageDialog(this, "Email whitelisted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
-            dialog.dispose();
-            this.emailMenuDisplay();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-    }
-
     private void itemMenuDisplay(){
         ArrayList<Item> items = this.getAllItems();
 
@@ -1105,6 +1157,24 @@ public class SwingService extends JFrame {
         return null;
     }
 
+    private ArrayList<Store> getStoresFromItem(Item item){
+        try{
+            return ItemService.getStoresFromItem(item);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+        return null;
+    }
+
+    private ArrayList<Inventory> getItemsFromStore(Store store){
+        try{
+            return StoreService.getItemsFromStore(store);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
+        }
+        return null;
+    }
+
     private void updateItem(String name, double price, Item item){
         try{
             ItemService.updateItem(name,price,item);
@@ -1123,24 +1193,6 @@ public class SwingService extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
         }
-    }
-
-    private ArrayList<Store> getStoresFromItem(Item item){
-        try{
-            return ItemService.getStoresFromItem(item);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-        return null;
-    }
-
-    private ArrayList<Inventory> getItemsFromStore(Store store){
-        try{
-            return StoreService.getItemsFromStore(store);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-        return null;
     }
 
     private void displayStoresFromItem(Item item){
@@ -1228,58 +1280,6 @@ public class SwingService extends JFrame {
             dialog.dispose();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE );
-        }
-    }
-
-    private void deleteUser(User userDeleted){
-        boolean modifyingItself = userDeleted.getIdUser()==this.user.getIdUser();
-        boolean disconnect = false;
-        if(modifyingItself){
-            int response = JOptionPane.showConfirmDialog(this,"Deleting your user will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
-            if(response==JOptionPane.CANCEL_OPTION){
-                return;
-            }else {
-                disconnect = true;
-            }
-        }
-        UserService.deleteUser(userDeleted);
-        if(disconnect){
-            this.startDisplay();
-        }else {
-            this.userMenuDisplay();
-        }
-        JOptionPane.showMessageDialog(this, "User deleted successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
-    }
-
-    private void modifyUser(String username, String email, String password, Role role, User userModified){
-        boolean modifyingItself = userModified.getIdUser()==this.user.getIdUser();
-        boolean disconnect = false;
-        if(modifyingItself && userModified.getRole()!=role){
-            int response = JOptionPane.showConfirmDialog(this,"Changing your role will automatically disconnect you, Do you wish to continue ?","Modifying role",JOptionPane.OK_CANCEL_OPTION);
-            if(response==JOptionPane.CANCEL_OPTION){
-                return;
-            }else {
-                disconnect = true;
-            }
-        }
-        String oldEmail = userModified.getEmail();
-        Role oldRole = userModified.getRole();
-        EmailService.changeEmail(oldEmail,email);
-        boolean success = updateUser(username,email,password,role,userModified);
-        if(oldRole!=role && oldRole==Role.EMPLOYEE && success){
-            int response = JOptionPane.showConfirmDialog(this, "Do you want to remove the shops linked to that account", "Modifying role", JOptionPane.YES_NO_OPTION);
-            if(response==JOptionPane.YES_OPTION){
-                UserService.removeStores(userModified);
-            }
-        } else if (oldRole!=role && role==Role.EMPLOYEE && UserService.getAmountStore(userModified)==0 && success) {
-            int response = JOptionPane.showConfirmDialog(this, "Do you want to link a shop to that employee", "Modifying role", JOptionPane.YES_NO_OPTION);
-            if(response==JOptionPane.YES_OPTION){
-                this.dialogChoseStore(userModified);
-            }
-        }
-        JOptionPane.showMessageDialog(this, "User updated successfully ","Success",JOptionPane.INFORMATION_MESSAGE );
-        if(disconnect){
-            this.startDisplay();
         }
     }
 
@@ -1539,7 +1539,7 @@ public class SwingService extends JFrame {
 
     //listeners methods
     private static void setPlaceholder(JTextField textField) {
-        textField.setText("example@example.com");
+        textField.setText("example@istore.com");
         textField.setForeground(Color.GRAY);
         textField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
