@@ -27,9 +27,9 @@ public class SwingService extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JButton loginButton = buttonMaker("Log In","src/img/icons/delete.png" );
+        JButton loginButton = buttonMaker("Log In","src/img/icons/profile.png" );
         loginButton.addActionListener(_ -> this.loginDisplay());
-        JButton registerButton =buttonMaker("Register","src/img/icons/delete.png" );
+        JButton registerButton =buttonMaker("Register","src/img/icons/profile.png" );
         registerButton.addActionListener(_ -> this.registerDisplay());
         JButton exitButton = this.exitButton();
 
@@ -239,15 +239,15 @@ public class SwingService extends JFrame {
         JButton itemMenuButton = null;
         JButton emailMenuButton = null;
         if(isAdmin) {
-            itemMenuButton = buttonMaker("Item menu", "src/img/icons/delete.png");
+            itemMenuButton = buttonMaker("Item menu", "src/img/icons/item.png");
             itemMenuButton.addActionListener(_ -> itemMenuDisplay());
 
-            emailMenuButton = buttonMaker("Email menu", "src/img/icons/delete.png");
+            emailMenuButton = buttonMaker("Email menu", "src/img/icons/email.png");
             emailMenuButton.addActionListener(_ -> emailMenuDisplay());
         }
-        JButton storeMenuButton = buttonMaker("Store menu","src/img/icons/delete.png");
+        JButton storeMenuButton = buttonMaker("Store menu","src/img/icons/store.png");
         storeMenuButton.addActionListener(_ -> this.dialogChoseStore());
-        JButton userMenuButton = buttonMaker("User menu", "src/img/icons/delete.png");
+        JButton userMenuButton = buttonMaker("User menu", "src/img/icons/profile.png");
         userMenuButton.addActionListener(_ -> userMenuDisplay());
         JButton profileButton = profileButton();
         JButton disconnectButton = this.buttonMaker("Disconnect","src/img/icons/profile.png");
@@ -322,7 +322,7 @@ public class SwingService extends JFrame {
         passwordPanel.add(passwordLabel2);
         passwordPanel.add(passwordTextField);
 
-        JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/delete.png");
+        JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/validate.png");
         validateButton.addActionListener(_ -> this.updateAccount(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText()));
         validateButton.setForeground(Color.BLACK);
         validateButton.setBackground(new Color(144, 238, 144));
@@ -413,7 +413,7 @@ public class SwingService extends JFrame {
         rolePanel.add(roleLabel);
         rolePanel.add(roleCombobox);
 
-        JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/delete.png");
+        JButton validateButton = this.buttonMaker("Validate changes","src/img/icons/validate.png");
         validateButton.addActionListener(_ -> this.modifyUser(usernameTextField.getText(),emailTextField.getText(),passwordTextField.getText(),(Role) roleCombobox.getSelectedItem(),userDisplayed));
         validateButton.setForeground(Color.BLACK);
         validateButton.setBackground(new Color(144, 238, 144));
@@ -425,7 +425,7 @@ public class SwingService extends JFrame {
         deleteButton.setBackground(new Color(139, 0, 0));
         deleteButton.setOpaque(true);
 
-        JButton backButton = this.buttonMaker("Back","src/img/icons/profile.png");
+        JButton backButton = this.buttonMaker("Back","src/img/icons/back.png");
         backButton.addActionListener(_ -> this.userMenuDisplay());
 
         usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -567,7 +567,7 @@ public class SwingService extends JFrame {
                 JLabel rolePLabel= new JLabel(String.valueOf(userSelected.getRole()),SwingConstants.CENTER);
                 row.add(rolePLabel);
                 if(isAdmin) {
-                    JButton modifyButton = buttonMaker("Modify", "src/img/icons/delete.png");
+                    JButton modifyButton = buttonMaker("Modify", "src/img/icons/edit.png");
                     modifyButton.addActionListener(_ -> this.modifyUserDisplay(userSelected));
                     row.add(modifyButton);
                     JButton deleteButton = buttonMaker("Delete", "src/img/icons/delete.png");
@@ -633,7 +633,7 @@ public class SwingService extends JFrame {
                 tablePanel.add(row);
             }
         }
-        JButton createButton = this.buttonMaker("Whitelist a new Email","src/img/icons/profile.png");
+        JButton createButton = this.buttonMaker("Whitelist a new Email","src/img/icons/add.png");
         createButton.addActionListener(_ -> this.displayWhitelistEmail());
 
         JButton backButton = this.backToMenuButton();
@@ -680,10 +680,10 @@ public class SwingService extends JFrame {
         emailPanel.add(emailLabel);
         emailPanel.add(emailTextField);
 
-        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        JButton validateButton = buttonMaker("Validate","src/img/icons/validate.png");
         validateButton.addActionListener(_ -> this.createEmail(emailTextField.getText(),whitelistEmailDialog) );
 
-        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/cancel.png");
         cancelButton.addActionListener(_ -> whitelistEmailDialog.dispose());
 
         emailPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -733,7 +733,7 @@ public class SwingService extends JFrame {
         JComboBox<String> comboBox = new JComboBox<>(options);
         comboBox.setSelectedItem(storeName);
         comboBox.setPreferredSize(new Dimension(100, 30));
-        JButton confirmButton = buttonMaker("Confirm","src/img/icons/delete.png");
+        JButton confirmButton = buttonMaker("Confirm","src/img/icons/validate.png");
         confirmButton.addActionListener(_ -> this.storeItemMenuDisplay((String) comboBox.getSelectedItem()));
         storeSelectionPanel.add(storeSelectionLabel);
         storeSelectionPanel.add(comboBox);
@@ -753,7 +753,7 @@ public class SwingService extends JFrame {
                     }
                 }
             });
-            JButton createStoreButton = buttonMaker("Create new Store","src/img/icons/delete.png");
+            JButton createStoreButton = buttonMaker("Create new Store","src/img/icons/add.png");
             createStoreButton.setPreferredSize(new Dimension(250,45));
             createStoreButton.addActionListener(_ -> this.dialogCreateStore(false));
             storeSelectionPanel.add(createStoreButton);
@@ -808,12 +808,12 @@ public class SwingService extends JFrame {
         }
         JButton addButton = null;
         if(isAdmin) {
-            addButton = this.buttonMaker("Add an Item", "src/img/icons/profile.png");
+            addButton = this.buttonMaker("Add an Item", "src/img/icons/add.png");
             addButton.addActionListener(_ -> this.dialogAddItem(storeSelected));
         }
         JButton employeeButton = null;
         if(isWorkingHere){
-            employeeButton = this.buttonMaker("See Employees from the store", "src/img/icons/delete.png");
+            employeeButton = this.buttonMaker("See Employees from the store", "src/img/icons/see.png");
             employeeButton.addActionListener(_ -> this.storeEmployeeMenuDisplay(storeName));
         }
         JButton backButton = this.backToMenuButton();
@@ -866,7 +866,7 @@ public class SwingService extends JFrame {
         JComboBox<String> comboBox = new JComboBox<>(options);
         comboBox.setSelectedItem(storeName);
         comboBox.setPreferredSize(new Dimension(100, 30));
-        JButton confirmButton = buttonMaker("Confirm","src/img/icons/delete.png");
+        JButton confirmButton = buttonMaker("Confirm","src/img/icons/validate.png");
         confirmButton.addActionListener(_ -> this.storeItemMenuDisplay((String) comboBox.getSelectedItem()));
         JButton deleteStoreButton = null;
         JButton createStoreButton = null;
@@ -885,7 +885,7 @@ public class SwingService extends JFrame {
                     }
                 }
             });
-            createStoreButton = buttonMaker("Create a new Store","src/img/icons/delete.png");
+            createStoreButton = buttonMaker("Create a new Store","src/img/icons/add.png");
             createStoreButton.addActionListener(_ -> this.dialogCreateStore(true));
         }
         storeSelectionPanel.add(storeSelectionLabel);
@@ -943,10 +943,10 @@ public class SwingService extends JFrame {
         }
         JButton hireButton = null;
         if(isAdmin) {
-            hireButton = this.buttonMaker("Hire an Employee", "src/img/icons/profile.png");
+            hireButton = this.buttonMaker("Hire an Employee", "src/img/icons/add.png");
             hireButton.addActionListener(_ -> this.dialogHireEmployee(storeSelected));
         }
-        JButton itemButton  = this.buttonMaker("See items from the store", "src/img/icons/delete.png");
+        JButton itemButton  = this.buttonMaker("See items from the store", "src/img/icons/see.png");
         itemButton.addActionListener(_ -> this.storeItemMenuDisplay(storeName));
 
         JButton backButton = this.backToMenuButton();
@@ -1103,7 +1103,7 @@ public class SwingService extends JFrame {
                 tablePanel.add(row);
             }
         }
-        JButton createButton = this.buttonMaker("Create a new Item","src/img/icons/profile.png");
+        JButton createButton = this.buttonMaker("Create a new Item","src/img/icons/add.png");
         createButton.addActionListener(_ -> {
             this.displayCreateItem();
             this.itemMenuDisplay();
@@ -1214,7 +1214,7 @@ public class SwingService extends JFrame {
 
         storeDialog.add(scrollPane,BorderLayout.CENTER);
 
-        JButton closeButton = buttonMaker("Close", "src/img/icons/delete.png");
+        JButton closeButton = buttonMaker("Close", "src/img/icons/back.png");
         closeButton.addActionListener(_ -> storeDialog.dispose());
         storeDialog.add(closeButton,BorderLayout.SOUTH);
 
@@ -1247,10 +1247,10 @@ public class SwingService extends JFrame {
         pricePanel.add(priceLabel);
         pricePanel.add(priceSpinner);
 
-        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        JButton validateButton = buttonMaker("Validate","src/img/icons/validate.png");
         validateButton.addActionListener(_ -> this.createItem(nameTextField.getText(),(double) priceSpinner.getValue(),createItemDialog) );
 
-        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/cancel.png");
         cancelButton.addActionListener(_ -> createItemDialog.dispose());
 
         pricePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1409,10 +1409,10 @@ public class SwingService extends JFrame {
         namePanel.add(nameTextField);
 
 
-        JButton validateButton = buttonMaker("Validate","src/img/icons/delete.png");
+        JButton validateButton = buttonMaker("Validate","src/img/icons/validate.png");
         validateButton.addActionListener(_ -> this.createStore(nameTextField.getText(),createStoreDialog) );
 
-        JButton cancelButton = buttonMaker("Cancel","src/img/icons/delete.png");
+        JButton cancelButton = buttonMaker("Cancel","src/img/icons/cancel.png");
         cancelButton.addActionListener(_ -> createStoreDialog.dispose());
 
         namePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1476,13 +1476,13 @@ public class SwingService extends JFrame {
     }
 
     private JButton exitButton(){
-        JButton exitButton = buttonMaker("Exit","src/img/icons/delete.png" );
+        JButton exitButton = buttonMaker("Exit","src/img/icons/exit.png" );
         exitButton.addActionListener(_ -> System.exit(0));
         return exitButton;
     }
 
     private JButton backToMenuButton(){
-        JButton backButton = this.buttonMaker("Back","src/img/icons/profile.png");
+        JButton backButton = this.buttonMaker("Back","src/img/icons/back.png");
         backButton.addActionListener(_ -> this.menuDisplay());
         return backButton;
     }
@@ -1508,7 +1508,7 @@ public class SwingService extends JFrame {
     }
 
     private JButton createValidateItemButton(JTextField nameField, JSpinner priceSpinner, Item item){
-        JButton validateButton = buttonMaker("Validate", "src/img/icons/delete.png");
+        JButton validateButton = buttonMaker("Validate", "src/img/icons/validate.png");
         validateButton.setForeground(Color.BLACK);
         validateButton.setBackground(new Color(144, 238, 144));
         validateButton.setOpaque(true);
@@ -1532,7 +1532,7 @@ public class SwingService extends JFrame {
     }
 
     private JButton createViewStoresFromItemButton(Item item){
-        JButton viewButton = buttonMaker("View","src/img/icons/delete.png");
+        JButton viewButton = buttonMaker("View","src/img/icons/see.png");
         viewButton.addActionListener(_ -> displayStoresFromItem(item));
         return viewButton;
     }
