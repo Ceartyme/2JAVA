@@ -1543,7 +1543,7 @@ public class SwingService extends JFrame {
         textField.setForeground(Color.GRAY);
         textField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
-                if (textField.getText().equals("example@example.com")) {
+                if (textField.getText().equals("example@istore.com")) {
                     textField.setText("");
                     textField.setForeground(Color.BLACK);
                     textField.setBorder(UIManager.getBorder("TextField.border"));
