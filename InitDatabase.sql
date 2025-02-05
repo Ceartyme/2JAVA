@@ -65,18 +65,28 @@ VALUES  ('Laptop', 999.99),
         ('Mouse', 29.99);
 
 INSERT INTO WhitelistedEmail (Email)
-VALUES ("candicedambrin@gmail.com"),
-       ("clementbertin@gmail.com");
+VALUES ("candicedambrin@istore.com"),
+       ("clementbertin@istore.com"),
+       ("perrinebocquet@istore.com"),
+       ("admin@istore.com");
 
 INSERT INTO Stores (Name)
 VALUES ("Monoprix"),
        ("Auchan");
 
 INSERT INTO Users (Email, Password, Username, IdRole)
-VALUE ("admin@istore.com","$2a$10$wUItoNaEW9JbZV9JvIJFQ.qaTxUSQ/iikGnTFbqji5kGYe2eOym/i","Admin",1);
+VALUE ("admin@istore.com","$2a$10$wUItoNaEW9JbZV9JvIJFQ.qaTxUSQ/iikGnTFbqji5kGYe2eOym/i","Admin",1),
+      ("candicedambrin@istore.com","$2a$10$IWiMJD7NsZZi9MVG3bEfZeuXy2YT8U.kWv1B3fLO9bt4jZnVJoEYK", "Candice", 2),
+      ("clementbertin@istore.com","$2a$10$USis8QWZ0SPGpyhbkKa/ZO7OTh6xjjWn7RLR53vvYE0Ppte3PK4n.", "Clément", 2),
+      ("perrinebocquet@istore.com", "$2a$10$KQDqesXhPkaqjA83y1E4/ufcDpwlDfd2Bcii2nbSXMMvGMJxoVjqi", "Perrine", 3);
 
 
 INSERT INTO Inventories(IdStore, IdItem, Amount)
 VALUES (1,1,5),
        (1,3,1),
        (2,3,4);
+
+INSERT INTO WORKING (IdStore, IdUser)
+VALUES (1, 2),
+       (1,3),
+       (2, 2);
